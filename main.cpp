@@ -6,6 +6,7 @@
 int main (){
 	ifstream in ("input.in");
 	ofstream out ("output.out");
+	ofstream parsed ("parsed.out");
 	string input = "";
 	while (!in.eof()) { 
 		input += in.get(); 
@@ -21,16 +22,19 @@ int main (){
 	catch (PreprocessorException pe){
 		cout << pe.what();
 	}
-//	catch (ParserException pe){
-//		cout << pe.what();
-//	}
 
-	for(auto cc: pr.directives){
-		out << cc.text << '\n';
+	Lexer lexer(pr.output); 
+	try{
+		lexer.tokenize();
+	}
+	catch(ParserException pe){
+		cout << pe.what();
 	}
 
-//	for(auto cc: lexer.output){
-//		out << cc;
-//	}
+	out << pr.output;
+
+	for(auto cc: lexer.output){
+		parsed << cc;
+	}
 	return 0;
 }

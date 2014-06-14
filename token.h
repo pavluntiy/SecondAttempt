@@ -2,6 +2,8 @@
 #include <iostream>
 #include <sstream>
 #include <fstream>
+
+#include "position.h"
 using namespace std;
 class Token{ 
 public:
@@ -17,19 +19,7 @@ public:
 					ASSIGN,  
 					INT, FLOAT, CHAR, BOOL, STRING};
 
-struct Position {
-	int line, linePosition;
 
-	Position (int line = 0, int linePosition = 0): line(line), linePosition(linePosition){
-
-	} 
-
-	std::string toString(){
-		std::stringstream ss;
-		ss << "line: " << this->line << ", position: " << this->linePosition;
-		return ss.str();
-	}
-};
 Position position;
 std::string typeToText(){
 		switch (this->type){
@@ -39,7 +29,7 @@ std::string typeToText(){
 			case BLOCK_BEGIN: return "BLOCK_BEGIN";
 			case BLOCK_END: return "BLOCK_END";
 			case COMMENT: return "COMMENT";
-			case DIRECT: return "DIRECT";
+			case DIRECT: return "DIRECT	";
 			case SEMICOLON: return "SEMICOLON";
 			case NAME: return "NAME";
 			case OPERATOR: return "OPERATOR";
@@ -100,7 +90,7 @@ public:
 
 };
 
-std::ofstream& operator<< (std::ofstream &out, Token::Position &position){
+std::ofstream& operator<< (std::ofstream &out, Position &position){
 	out << position.toString();
 	return out;
 }

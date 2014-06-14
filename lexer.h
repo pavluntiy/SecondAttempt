@@ -25,11 +25,11 @@ public:
 	vector<Token> output;
 
 	int currentPosition;
-	Token::Position sourcePosition;
+	Position sourcePosition;
 
 
 	Lexer(string input){
-		this->sourcePosition = Token::Position(1, 1);
+		this->sourcePosition = Position(1, 1);
 		this->currentPosition = 0;
 		this->input = input;
 		this->currentChar = input[this->currentPosition];
@@ -44,7 +44,7 @@ public:
 	}
 
 	Token tryAndGetHexadecimal(bool zeroFound){
-		Token::Position startPosition = sourcePosition;
+		Position startPosition = sourcePosition;
 		std::string buffer;
 		bool isFloat = false;
 		if (currentChar == 'X' || currentChar == 'x'){
@@ -73,7 +73,7 @@ public:
 	}
 
 	Token tryAndGetBinar(bool zeroFound){
-		Token::Position startPosition = sourcePosition;
+		Position startPosition = sourcePosition;
 		std::string buffer;
 		bool isFloat = false;
 		if (currentChar == 'B' || currentChar == 'b'){
@@ -108,7 +108,7 @@ public:
 	}
 
 	Token tryAndGetOctal(bool zeroFound){
-		Token::Position startPosition = sourcePosition;
+		Position startPosition = sourcePosition;
 		std::string buffer;
 		bool isFloat = false;
 
@@ -143,7 +143,7 @@ public:
 
 
 	Token tryAndGetDecimal(bool zeroFound){
-		Token::Position startPosition = sourcePosition;
+		Position startPosition = sourcePosition;
 		std::string buffer;
 		bool isFloat = false;
 		if (Alphabet::isDigit(currentChar)){
@@ -226,10 +226,12 @@ public:
 
 	Token getDirective(){
 		std::string buffer = "";
-		while (!Alphabet::isNewline(currentChar) && !Alphabet::isEof(currentChar)){
+		while (!Alphabet::isNewline(currentChar) && !Alphabet::isEof(currentChar) && !find("//") && !find("/*")){
 			buffer += currentChar;
 			consume();
 		}
+
+		cout << currentChar << '\n';
 		return makeToken(Token::DIRECT, buffer, sourcePosition);
 	}
 
@@ -290,7 +292,7 @@ public:
 	}
 
 	Token getMultyLineComment () {
-		Token::Position startPosition = sourcePosition;
+		Position startPosition = sourcePosition;
 		std::string buffer;
 		while (!get("*/")){
 			if (Alphabet::isEof(currentChar)){
@@ -306,12 +308,19 @@ public:
 	}
 
 	Token getChar(){
-		Token::Position startPosition = sourcePosition;
+		Position startPosition = sourcePosition;
 		std::string buffer;
 		buffer += '\'';
-		while (currentChar != '\''){
+		bool wasSlash = false;
+		while (currentChar != '\'' || wasSlash && currentChar == '\''){
+			wasSlash = false;
 			if (Alphabet::isEof(currentChar)){
-				throw ParserException("Unfinished charecter symbol on " + startPosition.toString());
+				
+				throw ParserException("Unfinished character symbol on " + startPosition.toString());
+			}
+
+			if(currentChar == '\\'){
+				wasSlash = true;
 			}
 			buffer += currentChar;
 			consume();		
@@ -331,12 +340,18 @@ public:
 	}
 
 	Token getString(){
-		Token::Position startPosition = sourcePosition;
+		Position startPosition = sourcePosition;
 		std::string buffer;
 		buffer += '\"';
-		while (currentChar != '\"'){
+		bool wasSlash = false;
+		while (currentChar != '\"' || wasSlash && currentChar == '\"'){
+			wasSlash = false;
 			if (Alphabet::isEof(currentChar)){
 				throw ParserException("Unfinished string on " + startPosition.toString());
+			}
+
+			if(currentChar == '\\'){
+				wasSlash = true;
 			}
 			buffer += currentChar;
 			consume();
@@ -718,7 +733,7 @@ public:
 
 	void tokenize (){
 		Token currentToken;
-		currentToken = Token(Token::BEGIN, "", Token::Position());
+		currentToken = Token(Token::BEGIN, "", Position());
 		do {
 			output.push_back(currentToken);
 			currentToken = getNextToken();
@@ -731,7 +746,7 @@ public:
 		output.push_back(currentToken);
 	}
 
-	Token makeToken(Token::Type type = Token::NONE, string text = "", Token::Position position = {0, 0}){
+	Token makeToken(Token::Type type = Token::NONE, string text = "", Position position = {0, 0}){
 		if(position.line == 0 && position.linePosition == 0){
 			return Token(type, text, sourcePosition);
 		}
