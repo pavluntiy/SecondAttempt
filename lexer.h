@@ -1,3 +1,5 @@
+#ifndef LEXER_H
+#define LEXER_H
 #include <iostream>
 #include <fstream>
 #include <stdio.h>
@@ -62,12 +64,12 @@ public:
 			}
 			buffer += std::string(" (hexadecimal)");
 			if (isFloat){
-				return Token(Token::FLOAT, buffer);
+				return makeToken(Token::FLOAT, buffer);
 			}
-			return Token(Token::INT, buffer);
+			return makeToken(Token::INT, buffer);
 		}
 
-		return Token(Token::NONE);
+		return makeToken(Token::NONE);
 	}
 
 	Token tryAndGetBinar(bool zeroFound){
@@ -97,12 +99,12 @@ public:
 
 			buffer += std::string(" (binar)");
 			if (isFloat){
-				return Token(Token::FLOAT, buffer, startPosition);
+				return makeToken(Token::FLOAT, buffer, startPosition);
 			}
-			return Token(Token::INT, buffer, startPosition);
+			return makeToken(Token::INT, buffer, startPosition);
 		}
 
-		return Token(Token::NONE);
+		return makeToken(Token::NONE);
 	}
 
 	Token tryAndGetOctal(bool zeroFound){
@@ -121,7 +123,7 @@ public:
 			}
 
 			if(buffer == "0"){
-				return Token(Token::INT, "0", sourcePosition);
+				return makeToken(Token::INT, "0", sourcePosition);
 			}
 			buffer += std::string(" (octal)");
 
@@ -131,12 +133,12 @@ public:
 				throw ParserException("Nonoctal digits in octal number " + sourcePosition.toString());
 			}
 			if (isFloat){
-				return Token(Token::FLOAT, buffer, startPosition);
+				return makeToken(Token::FLOAT, buffer, startPosition);
 			}
-			return Token(Token::INT, buffer, startPosition);
+			return makeToken(Token::INT, buffer, startPosition);
 		}
 
-		return Token(Token::NONE);
+		return makeToken(Token::NONE);
 	}
 
 
@@ -155,13 +157,13 @@ public:
 
 
 			if (isFloat){
-				return Token(Token::FLOAT, buffer, startPosition);
+				return makeToken(Token::FLOAT, buffer, startPosition);
 			}
-			return Token(Token::INT, buffer, startPosition);
+			return makeToken(Token::INT, buffer, startPosition);
 
 		}
 
-		return Token(Token::NONE);
+		return makeToken(Token::NONE);
 	}
 
 
@@ -175,27 +177,27 @@ public:
 		}
 
 		numeric = tryAndGetHexadecimal(zeroFound);
-		if (numeric != Token(Token::NONE)){
+		if (numeric != makeToken(Token::NONE)){
 			return numeric;
 		}
 
 		numeric = tryAndGetBinar(zeroFound);
-		if (numeric != Token(Token::NONE)){
+		if (numeric != makeToken(Token::NONE)){
 			return numeric;
 		}
 
 		numeric = tryAndGetOctal(zeroFound);
-		if (numeric != Token(Token::NONE)){
+		if (numeric != makeToken(Token::NONE)){
 			return numeric;
 		}
 		
 
 		numeric = tryAndGetDecimal(zeroFound);
-		if (numeric != Token(Token::NONE)){
+		if (numeric != makeToken(Token::NONE)){
 			return numeric;
 		}
 
-		return Token(Token::NONE);
+		return makeToken(Token::NONE);
 	}
 
 	bool isKeyWord(string buffer){
@@ -215,10 +217,10 @@ public:
 
 
 		if (isKeyWord(buffer)){
-			return Token(Token::KEYWORD, buffer);
+			return makeToken(Token::KEYWORD, buffer);
 		}
 
-		return Token(Token::NAME, buffer, sourcePosition);
+		return makeToken(Token::NAME, buffer, sourcePosition);
 
 	}
 
@@ -228,7 +230,7 @@ public:
 			buffer += currentChar;
 			consume();
 		}
-		return Token(Token::DIRECT, buffer, sourcePosition);
+		return makeToken(Token::DIRECT, buffer, sourcePosition);
 	}
 
 
@@ -300,7 +302,7 @@ public:
 		if (!Alphabet::isEof(currentChar)){
 			consume();
 		}
-		return Token(Token::COMMENT, buffer);
+		return makeToken(Token::COMMENT, buffer);
 	}
 
 	Token getChar(){
@@ -316,7 +318,7 @@ public:
 		}
 		consume();
 		buffer += '\'';
-		return Token(Token::CHAR, buffer); 
+		return makeToken(Token::CHAR, buffer); 
 	}
 
 	Token getComment (){
@@ -325,7 +327,7 @@ public:
 			buffer += currentChar;
 			consume();
 		}
-		return Token(Token::COMMENT, buffer);
+		return makeToken(Token::COMMENT, buffer);
 	}
 
 	Token getString(){
@@ -341,7 +343,7 @@ public:
 		}
 		consume();
 		buffer += '\"';
-		return Token(Token::STRING, buffer); 
+		return makeToken(Token::STRING, buffer); 
 	}
 
 	Token getSystemTokens(){
@@ -377,15 +379,15 @@ public:
 			if(get("#")){
 				return getDirective();
 			}
-
+			else
 			for(auto it: additionalOperators){
 				if(find(it)){
 					get(it);
-					return Token(Token::OPERATOR, it);
+					return makeToken(Token::OPERATOR, it);
 				}
 			}
 
-			return Token(Token::NONE);
+			return makeToken(Token::NONE);
 		
 
 	}
@@ -395,28 +397,28 @@ public:
 			         	match ('.');
 			         	if (currentChar == '.'){
 			         		match('.');
-			         		return Token(Token::OPERATOR, "...");
+			         		return makeToken(Token::OPERATOR, "...");
 			         	}
 			         	else {
-			         		return Token(Token::OPERATOR, "..");
+			         		return makeToken(Token::OPERATOR, "..");
 			         	}
 			        }
 			        else {
-			         	return Token(Token::DOT, "." ); 
+			         	return makeToken(Token::DOT, "." ); 
 			     	}
 	}
 
 	Token getPlusVariants (){
 		if ( currentChar == '+' ){
 						match('+');
-						return Token(Token::OPERATOR, "++"); 
+						return makeToken(Token::OPERATOR, "++"); 
 					}
 					else if ( currentChar == '=' ){
 						match('=');
-						return Token(Token::OPERATOR, "+=");
+						return makeToken(Token::OPERATOR, "+=");
 					}
 					else {
-						return Token(Token::OPERATOR, "+");
+						return makeToken(Token::OPERATOR, "+");
 					}
 	}
 
@@ -424,75 +426,75 @@ public:
 	Token getColonVariants(){
 		if ( currentChar == '=' ) {
 						match('=');
-						return Token(Token::OPERATOR, ":="); 
+						return makeToken(Token::OPERATOR, ":="); 
 					}
 					else if (currentChar == ':'){
 						match(':');
 						if (currentChar == '='){
 							match('=');
-							return Token(Token::OPERATOR, "::=");
+							return makeToken(Token::OPERATOR, "::=");
 						}
 						else {
-							return Token(Token::OPERATOR, "::");
+							return makeToken(Token::OPERATOR, "::");
 						}
 					}
 					else {
-						return Token(Token::OPERATOR, ":");
+						return makeToken(Token::OPERATOR, ":");
 					}
 	}
 
 	Token getMinusVariats(){
 		if (currentChar == '>'){
-						return Token(Token::OPERATOR, "->");
+						return makeToken(Token::OPERATOR, "->");
 					}
 					else if (currentChar == '-' ){
 						match('-');
 						if (currentChar == '>'){
-							return Token(Token::OPERATOR, "-->");
+							return makeToken(Token::OPERATOR, "-->");
 						}
 						else {
-							return Token(Token::OPERATOR, "--");
+							return makeToken(Token::OPERATOR, "--");
 						}
 					}
 					else if ( currentChar == '=' ){
 						match('=');
-						return Token(Token::OPERATOR, "-=");
+						return makeToken(Token::OPERATOR, "-=");
 					}
 					else {
-						return Token(Token::OPERATOR, "-");
+						return makeToken(Token::OPERATOR, "-");
 					}
 	}
 
 	Token getEqualsVariants(){
 		if (currentChar == '='){
 						match('=');
-						return Token(Token::OPERATOR, "==");
+						return makeToken(Token::OPERATOR, "==");
 					}
 					else if (find(">>")){
 						get(">>");
-						return Token(Token::OPERATOR, "=>>");
+						return makeToken(Token::OPERATOR, "=>>");
 					}
 					else if (currentChar == '>'){
 						match('>');
-						return Token(Token::OPERATOR, "=>");
+						return makeToken(Token::OPERATOR, "=>");
 					}
 
 					else {
-						return Token(Token::OPERATOR, "=");
+						return makeToken(Token::OPERATOR, "=");
 					}
 	}
 
 	Token getLessVariants(){
 		if (currentChar == '='){
 						match('=');
-						return Token(Token::OPERATOR, "<=");
+						return makeToken(Token::OPERATOR, "<=");
 					}
 					else if (currentChar == '<'){
 						match('<');
-						return Token(Token::OPERATOR, "<<");
+						return makeToken(Token::OPERATOR, "<<");
 					}
 					else {
-						return Token(Token::OPERATOR, "<");
+						return makeToken(Token::OPERATOR, "<");
 
 					}
 
@@ -501,20 +503,20 @@ public:
 	Token getGreaterVariants(){
 		if (currentChar == '='){
 						match('=');
-						return Token(Token::OPERATOR, ">=");
+						return makeToken(Token::OPERATOR, ">=");
 					}
 					else if (currentChar == '>'){
 						match('>');
 						if (currentChar == '>'){
 							match('>');
-							return Token(Token::OPERATOR, ">>>");
+							return makeToken(Token::OPERATOR, ">>>");
 						}
 						else {
-							return Token(Token::OPERATOR, ">>");
+							return makeToken(Token::OPERATOR, ">>");
 						}
 					}
 					else {
-						return Token(Token::OPERATOR, ">");
+						return makeToken(Token::OPERATOR, ">");
 
 					}
 	}
@@ -522,38 +524,38 @@ public:
 	Token getSlashVariants(){
 			if (currentChar == '/'){
 						match('/');
-						return Token(Token::OPERATOR, "//");
+						return makeToken(Token::OPERATOR, "//");
 					}
 					else if (currentChar == '='){
 						match('=');
-						return Token(Token::OPERATOR, "/=");
+						return makeToken(Token::OPERATOR, "/=");
 					}
 					else {
-						return Token(Token::OPERATOR, "/");
+						return makeToken(Token::OPERATOR, "/");
 					}
 	}
 
 	Token getProcentVariants(){
 			if (currentChar == '='){
 						match('=');
-						return Token(Token::OPERATOR, "%%=");
+						return makeToken(Token::OPERATOR, "%%=");
 					}
 					else {
-						return Token(Token::OPERATOR, "%%");
+						return makeToken(Token::OPERATOR, "%%");
 					}
 	}
 
 	Token getStarVariants(){
 			if ( currentChar == '*' ){
 						match('*');
-						return Token(Token::OPERATOR, "**"); 
+						return makeToken(Token::OPERATOR, "**"); 
 					}
 					else if ( currentChar == '=' ){
 						match('=');
-						return Token(Token::OPERATOR, "*=");
+						return makeToken(Token::OPERATOR, "*=");
 					}
 					else {
-						return Token(Token::OPERATOR, "*");
+						return makeToken(Token::OPERATOR, "*");
 					}
 
 	}
@@ -563,16 +565,16 @@ public:
 				match('&');
 				if (currentChar == '='){
 					match('=');
-					return Token(Token::OPERATOR, "&&="); 
+					return makeToken(Token::OPERATOR, "&&="); 
 				}
-				return Token(Token::OPERATOR, "&&"); 
+				return makeToken(Token::OPERATOR, "&&"); 
 			}
 			else if ( currentChar == '=' ){
 				match('=');
-				return Token(Token::OPERATOR, "&=");
+				return makeToken(Token::OPERATOR, "&=");
 			}
 			else {
-				return Token(Token::OPERATOR, "&");
+				return makeToken(Token::OPERATOR, "&");
 			}
 
 	}
@@ -582,16 +584,16 @@ public:
 				match('|');
 				if (currentChar == '='){
 					match('=');
-					return Token(Token::OPERATOR, "||="); 
+					return makeToken(Token::OPERATOR, "||="); 
 				}
-				return Token(Token::OPERATOR, "||"); 
+				return makeToken(Token::OPERATOR, "||"); 
 			}
 			else if ( currentChar == '=' ){
 				match('=');
-				return Token(Token::OPERATOR, "|=");
+				return makeToken(Token::OPERATOR, "|=");
 			}
 			else {
-				return Token(Token::OPERATOR, "|");
+				return makeToken(Token::OPERATOR, "|");
 			}
 
 	}
@@ -599,10 +601,10 @@ public:
 	Token getWaveVariants(){
 			if ( currentChar == '=' ){
 				match('=');
-				return Token(Token::OPERATOR, "~=");
+				return makeToken(Token::OPERATOR, "~=");
 			}
 			else {
-				return Token(Token::OPERATOR, "~");
+				return makeToken(Token::OPERATOR, "~");
 			}
 
 	}
@@ -610,10 +612,10 @@ public:
 	Token getExclamationMarkVariants(){
 		if ( currentChar == '=' ){
 				match('=');
-				return Token(Token::OPERATOR, "!=");
+				return makeToken(Token::OPERATOR, "!=");
 			}
 			else {
-				return Token(Token::OPERATOR, "!");
+				return makeToken(Token::OPERATOR, "!");
 			}
 	}
 
@@ -624,16 +626,16 @@ public:
 
 		switch (currentChar) {
 					//case '#' : match('#'); return getDirective();
-					case '(' : match('('); return Token(Token::BRACE_LEFT);
-					case ')' : match(')'); return Token(Token::BRACE_RIGHT);
-					case '[' : match('['); return Token(Token::BRACKET_LEFT);
-					case ']' : match(']'); return Token(Token::BRACKET_RIGHT);
-					case '{' : match('{'); return Token(Token::CURL_LEFT);
-					case '}' : match('}'); return Token(Token::CURL_RIGHT);
+					case '(' : match('('); return makeToken(Token::BRACE_LEFT);
+					case ')' : match(')'); return makeToken(Token::BRACE_RIGHT);
+					case '[' : match('['); return makeToken(Token::BRACKET_LEFT);
+					case ']' : match(']'); return makeToken(Token::BRACKET_RIGHT);
+					case '{' : match('{'); return makeToken(Token::CURL_LEFT);
+					case '}' : match('}'); return makeToken(Token::CURL_RIGHT);
 
-			        case ',' : match(','); return Token(Token::COMMA);			       
-			        case ';' : match(';'); return Token(Token::SEMICOLON);
-			        case '?' : match('?'); return Token(Token::OPERATOR, "?");
+			        case ',' : match(','); return makeToken(Token::COMMA);			       
+			        case ';' : match(';'); return makeToken(Token::SEMICOLON);
+			        case '?' : match('?'); return makeToken(Token::OPERATOR, "?");
 
 			        case EOF: return Token (Token::END, "");
 
@@ -658,7 +660,7 @@ public:
 					if (Alphabet::isSpecialSymbol(currentChar)){
 						char c = currentChar; 
 						consume();
-						return Token(Token::OPERATOR, std::string("") + c);
+						return makeToken(Token::OPERATOR, std::string("") + c);
 					}
 					else{
 						if (!Alphabet::isAcceptableCharacter(currentChar)){
@@ -669,7 +671,7 @@ public:
 
 			}
 
-			return Token(Token::NONE);
+			return makeToken(Token::NONE);
 
 	}
 	Token getNextToken(){
@@ -677,12 +679,12 @@ public:
 		
 			Token currentToken;
 			currentToken = getSystemTokens();
-			if (currentToken != Token(Token::NONE)){
+			if (currentToken != makeToken(Token::NONE)){
 				return currentToken;
 			}
 
 			currentToken = getSymbolicTokens();
-			if (currentToken != Token(Token::NONE)){
+			if (currentToken != makeToken(Token::NONE)){
 				return currentToken;
 			}
 
@@ -729,5 +731,14 @@ public:
 		output.push_back(currentToken);
 	}
 
+	Token makeToken(Token::Type type = Token::NONE, string text = "", Token::Position position = {0, 0}){
+		if(position.line == 0 && position.linePosition == 0){
+			return Token(type, text, sourcePosition);
+		}
+		return Token(type, text, position);
+	}
+
 
 };
+
+#endif

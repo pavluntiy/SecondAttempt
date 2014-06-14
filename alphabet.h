@@ -1,3 +1,5 @@
+#ifndef ALPHABET_H
+#define ALPHABET_H
 class Alphabet {
 public:
 	static bool isIdCharacter(char c){
@@ -34,6 +36,10 @@ public:
 	static bool isTab(char c){
 		return (c == '\t');
 	} 
+
+	static bool isIdle(char c){
+		return isTab(c) || isNewline(c) || isWhitespace(c);
+	}
 
 	static bool isEof(char c){
 	        return (c == EOF);
@@ -77,3 +83,5 @@ public:
 		return isTrue;
 	}
 };
+
+#endif

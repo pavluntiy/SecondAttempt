@@ -1,4 +1,5 @@
 #include "lexer.h"
+#include "preproc.h"
 #include <iostream>
 #include <fstream>
 
@@ -11,16 +12,25 @@ int main (){
 	}
 
 
-	Lexer lexer(input); 
+	//Lexer lexer(input); 
+	Preprocessor pr(input);
 	try{
-		lexer.tokenize();
+		pr.preprocess();
+	//	lexer.tokenize();
 	}
-	catch (ParserException pe){
+	catch (PreprocessorException pe){
 		cout << pe.what();
 	}
+//	catch (ParserException pe){
+//		cout << pe.what();
+//	}
 
-	for(auto cc: lexer.output){
-		out << cc;
+	for(auto cc: pr.directives){
+		out << cc.text << '\n';
 	}
+
+//	for(auto cc: lexer.output){
+//		out << cc;
+//	}
 	return 0;
 }
