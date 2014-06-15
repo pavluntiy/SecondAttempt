@@ -231,7 +231,7 @@ public:
 			consume();
 		}
 
-		cout << currentChar << '\n';
+		//cout << currentChar << '\n';
 		return makeToken(Token::DIRECT, buffer, sourcePosition);
 	}
 

@@ -71,6 +71,7 @@ public:
 
 	}
 
+
 	static bool isAcceptableCharacter (char c){
 		bool isTrue = false;
 		isTrue = isTrue || isNewline(c);
