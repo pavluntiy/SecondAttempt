@@ -1,3 +1,6 @@
+#ifndef TOKEN_H
+#define TOKEN_H
+
 #include <string>
 #include <iostream>
 #include <sstream>
@@ -21,7 +24,7 @@ public:
 
 
 Position position;
-std::string typeToText(){
+virtual std::string typeToText(){
 		switch (this->type){
 			case NONE: return "NONE";
 			case BEGIN: return "BEGIN";
@@ -58,11 +61,11 @@ std::string typeToText(){
 
 public:
 	
-	std::string getText (){
+	virtual std::string getText (){
 		return this->text;
 	}
 
-	Type getType (){
+	virtual Type getType (){
 		return this->type;
 	}
 
@@ -78,12 +81,12 @@ public:
 
 
 
-	bool operator == (const Token &second)
+	virtual bool operator == (const Token &second)
 	const{
 		return (this->type == second.type);
 	}
 
-	bool operator != (const Token &second)
+	virtual bool operator != (const Token &second)
 	const{
 		return (this->type != second.type);
 	}
@@ -107,3 +110,8 @@ std::ofstream& operator<< (std::ofstream &out, Token &currentToken){
 	return out;
 } 
 
+std::string typeToText(Token::Type type){
+	return Token(type, "").typeToText();
+}
+
+#endif

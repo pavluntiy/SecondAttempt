@@ -189,6 +189,7 @@ public:
 					Preprocessor pr(includeInput);
 					pr.includedFiles = this->includedFiles;
 					pr.defined = this->defined;
+					pr.macroes = this->macroes;
 					try {
 						pr.preprocess();
 					}
@@ -196,6 +197,7 @@ public:
 						throw PreprocessorException("In file " + cf + ", included on " + sourcePosition.toString() + " happened:\n\t" + pe.what());
 					}
 
+					this->macroes = pr.macroes;
 					this->defined = pr.defined;
 					this->includedFiles = pr.includedFiles;
 					output += '\n';

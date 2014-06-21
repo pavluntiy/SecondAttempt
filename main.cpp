@@ -1,7 +1,10 @@
 #include "lexer.h"
+#include "recognitionexception.h"
 #include "preproc.h"
 #include <iostream>
 #include <fstream>
+
+#include "parser.h"
 
 int main (){
 	ifstream in ("input.in");
@@ -20,7 +23,9 @@ int main (){
 	//	lexer.tokenize();
 	}
 	catch (PreprocessorException pe){
-		cout << pe.what();
+		cout << pe.what()<< "\n";
+		cout << "Process terminated\n";
+		return 0;
 	}
 
 	Lexer lexer(pr.output); 
@@ -28,7 +33,9 @@ int main (){
 		lexer.tokenize();
 	}
 	catch(ParserException pe){
-		cout << pe.what();
+		cout << pe.what() << "\n";
+		cout << "Process terminated\n";
+		return 0;
 	}
 
 	out << pr.output;
@@ -36,5 +43,16 @@ int main (){
 	for(auto cc: lexer.output){
 		parsed << cc;
 	}
+
+	Parser parser(lexer.output);
+
+	try{
+		parser.buildTree();
+	}
+	catch (RecognitionException re){
+		cout << re.what()<< "\n";
+		cout << "Process terminated\n";
+		return 0;
+	} 
 	return 0;
 }

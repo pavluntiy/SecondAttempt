@@ -248,6 +248,7 @@ public:
 
 
 	void consume (){
+		//cout << "ololo!\n";
 		if (Alphabet::isNewline(currentChar)){
 			sourcePosition.line ++;
 			sourcePosition.linePosition = 1;
@@ -379,10 +380,6 @@ public:
 				return  getWord();
 			}
 			else 
-			if (get("/*")){
-				return  getMultyLineComment();
-			}
-			else
 			if(get("\'")){
 				return getChar();
 			}
@@ -393,6 +390,10 @@ public:
 			else
 			if(get("#")){
 				return getDirective();
+			}
+			else
+			if(get("\"")){
+				return getString();
 			}
 			else
 			for(auto it: additionalOperators){
@@ -460,11 +461,13 @@ public:
 
 	Token getMinusVariats(){
 		if (currentChar == '>'){
+						match('>');
 						return makeToken(Token::OPERATOR, "->");
 					}
 					else if (currentChar == '-' ){
 						match('-');
 						if (currentChar == '>'){
+							match('>');
 							return makeToken(Token::OPERATOR, "-->");
 						}
 						else {
