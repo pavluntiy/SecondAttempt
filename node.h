@@ -48,7 +48,8 @@ public:
 		VARQ, 
 		TYPEDEF, 
 		PREDEF_TYPE,
-		FUNCDEF
+		FUNCDEF,
+		FORTHING
 	}; 
 
 	NodeType type;
@@ -112,6 +113,7 @@ public:
 			case TYPEDEF: 		return "TYPEDEF";
 			case PREDEF_TYPE:	return "PREDEF_TYPE";
 			case FUNCDEF:	return "FUNCDEF";
+			case FORTHING: return "FORTHING";
 		}
 	}
 

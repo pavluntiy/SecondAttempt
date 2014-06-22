@@ -52,7 +52,7 @@ public:
 			return true;
 		}else {
 			if(type == Token::CURL_RIGHT || type == Token::BRACE_RIGHT){
-				throw RecognitionException("Missing " + typeToText(type) + " on position " + currentToken.position.toString() + " (Token # " + std::to_string(currentPosition) +")");
+				cout << ("\t\tYou could have missed " + typeToText(type) + " on position " + currentToken.position.toString() + " (Token # " + std::to_string(currentPosition) +")");
 			}
 
 			cout << "\t Tried " << Token(type).typeToText() << ", got " << currentToken.typeToText() << "\n";
@@ -105,6 +105,11 @@ public:
 											//		break;
 											//	}
 											//	else recoil(previousPosition);
+												if(match(Node::ARGLIST)){
+													result = true;
+													break;
+												}
+												else recoil(previousPosition);
 
 												if(match(Node::FUNCALL) && match(Token::DOT) && match(Node::VALUE)){
 													result = true;
@@ -179,6 +184,13 @@ public:
 													break;
 												}
 												else recoil(previousPosition);
+
+												if(match(Node::ARGLIST)){
+													result = true;
+													break;
+												}
+												else recoil(previousPosition);
+
 												if(match(Token::BRACE_LEFT) && match(Node::EXPR4) && match(Token::BRACE_RIGHT)){
 													result = true;
 													break;
@@ -536,11 +548,11 @@ public:
 
 
 
-										if(true){
-												result = true;
-												break;
-										}
-										else recoil(previousPosition);
+							//			if(true){
+							//					result = true;
+							//					break;
+							//			}
+							//			else recoil(previousPosition);
 
 
 
@@ -556,12 +568,20 @@ public:
 										}
 										else recoil(previousPosition);
 
-
 										if(match(Node::ASSIGNMENT)){
 													result = true;
 													break;
 										}
 										else recoil(previousPosition);
+
+										if(match(Node::EXPR1)){
+													result = true;
+													break;
+										}
+										else recoil(previousPosition);
+
+
+										
 
 										if(match(Node::VALUE)){
 													result = true;
@@ -578,6 +598,11 @@ public:
 													break;
 										}
 										else recoil(previousPosition);
+									if(match(Token::BRACE_LEFT) && match(Token::BRACE_RIGHT)){
+													result = true;
+													break;
+										}
+									else recoil(previousPosition);
 
 									} break;
 
@@ -598,11 +623,11 @@ public:
 									} break;
 
 					case Node::OPERATOR: {
-									//	if(match(Node::SPECIAL)){
-									//				result = true;
-									//				break;
-									//	}
-									//	else recoil(previousPosition);
+										if(match(Node::SPECIAL)){
+													result = true;
+													break;
+										}
+										else recoil(previousPosition);
 										if(match(Node::FUNCDEF)){
 													result = true;
 													break;
@@ -692,6 +717,55 @@ public:
 
 
 									} break;
+
+				case Node::FORTHING: {	
+										if(match(Node::DECLARATION) ){
+													result = true;
+													break;
+										}
+										else recoil(previousPosition);
+
+										if(match(Node::EXPRESSION)){
+													result = true;
+													break;
+										}
+										else recoil(previousPosition);
+
+										
+										
+
+										if(match(Node::BODY)){
+													result = true;
+													break;
+										}
+										else recoil(previousPosition);
+
+									} break;
+				case Node::SPECIAL: {
+									//	if(match(Token(Token::KEYWORD, "for")) && match(Token::BRACE_LEFT) && match(Node::OPERATOR) && match(Token::SEMICOLON) &&
+									//		match(Node::OPERATOR) &&	match(Token::SEMICOLON) && match(Node::OPERATOR) && match(Token::BRACE_RIGHT) && match(Node::OPERATOR) 
+									//	) {
+									//				result = true;
+									//				break;
+									///	}
+									//else recoil(previousPosition);
+
+								if(match(Token(Token::KEYWORD, "for")) && match(Token::BRACE_LEFT) &&
+										match(Node::FORTHING) && match(Token::SEMICOLON) && 
+										match(Node::FORTHING) && match(Token::SEMICOLON) && 
+										match(Node::FORTHING) &&
+								 		match(Token::BRACE_RIGHT) && match(Node::OPERATOR) 
+								 ) {
+													result = true;
+													break;
+										}
+									else recoil(previousPosition);
+
+
+
+
+									} break;
+
 
 
 

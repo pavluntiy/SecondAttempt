@@ -1,13 +1,20 @@
 +<body> ::= {<operators>}
 +<operators> ::= <operator><operators>|NONE
-<operator> ::= <special>
+<operator> ::= 
+				<special>
 +				;
 +				<expression>;
--				<declaration>;
++				<declaration>;
 +				<body>
 + 				<funcdef>
+
+<forthing> ::= 
+					<expression>
+					<declaration>
+					NONE
+
 <special> ::= 
-				for(<declaration>;<condition>;<expression>)<action>
+				for(<forthing>;<forthing>;<forthing>)<operator>
 				for(<vardef> : <expression>)<action>
 				if(<condition>)<action>
 				if(<condition>) <action> else <action>
@@ -64,6 +71,8 @@
 
 
 
+
+
 +<funcall> ::=
 				//<funcall><arglist>
 				+<name><arglist>
@@ -76,7 +85,8 @@
 			<listElem>
 			<listElem>, <list>
 
-+<listElem> ::= 
++<listElem> ::= 	
+				<expr1>
 				<assignment>
 				<value>
 				<list>
@@ -84,12 +94,13 @@
 
 
 +<value> ::= 
-			<expr1>
+			+<expr1>
 			+<name>
 			+<constant>
 			+<funcall>
 			+<funcall>.<value>
 			+<funcall>-><value>
+			<list>
 
 
 +<name> :: =	
