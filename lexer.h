@@ -556,10 +556,10 @@ public:
 	Token getProcentVariants(){
 			if (currentChar == '='){
 						match('=');
-						return makeToken(Token::OPERATOR, "%%=");
+						return makeToken(Token::OPERATOR, "%=");
 					}
 					else {
-						return makeToken(Token::OPERATOR, "%%");
+						return makeToken(Token::OPERATOR, "%");
 					}
 	}
 

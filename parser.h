@@ -100,11 +100,6 @@ public:
 			switch(what){
 				case Node::VALUE: {				
 
-											//	if(match(Node::EXPR1)){
-											//		result = true;
-											//		break;
-											//	}
-											//	else recoil(previousPosition);
 												if(match(Node::ARGLIST)){
 													result = true;
 													break;
@@ -381,12 +376,6 @@ public:
 									//				break;
 									//			}
 									//			else recoil(previousPosition);
-												if(match(Node::FUNCALL)){
-													result = true;
-													break;
-												}
-												else recoil(previousPosition);
-							
 												if(match(Node::ASSIGNMENT)){
 													result = true;
 													break;
@@ -398,6 +387,15 @@ public:
 													break;
 												}
 												else recoil(previousPosition);
+									//			if(match(Node::FUNCALL)){
+									//				result = true;
+									//				break;
+									//			}
+									//			else recoil(previousPosition);
+							
+												
+
+												
 
 												
 											} break;
@@ -410,11 +408,65 @@ public:
 												}
 												else recoil(previousPosition);
 
-												if(match(Token::NAME) && match(Token(Token::OPERATOR, "=")) && match(Node::VALUE)){
+												if(match(Token::NAME) && match(Token(Token::OPERATOR, "+=")) && match(Node::EXPR1)){
 													result = true;
 													break;
 												}
 												else recoil(previousPosition);
+
+												if(match(Token::NAME) && match(Token(Token::OPERATOR, "-=")) && match(Node::EXPR1)){
+													result = true;
+													break;
+												}
+												else recoil(previousPosition);
+
+												if(match(Token::NAME) && match(Token(Token::OPERATOR, "/=")) && match(Node::EXPR1)){
+													result = true;
+													break;
+												}
+												else recoil(previousPosition);
+
+												if(match(Token::NAME) && match(Token(Token::OPERATOR, "%=")) && match(Node::EXPR1)){
+													result = true;
+													break;
+												}
+												else recoil(previousPosition);
+
+												if(match(Token::NAME) && match(Token(Token::OPERATOR, "*=")) && match(Node::EXPR1)){
+													result = true;
+													break;
+												}
+												else recoil(previousPosition);
+
+												if(match(Token::NAME) && match(Token(Token::OPERATOR, "|=")) && match(Node::EXPR1)){
+													result = true;
+													break;
+												}
+												else recoil(previousPosition);
+
+												if(match(Token::NAME) && match(Token(Token::OPERATOR, "||=")) && match(Node::EXPR1)){
+													result = true;
+													break;
+												}
+												else recoil(previousPosition);
+
+												if(match(Token::NAME) && match(Token(Token::OPERATOR, "&=")) && match(Node::EXPR1)){
+													result = true;
+													break;
+												}
+												else recoil(previousPosition);
+
+												if(match(Token::NAME) && match(Token(Token::OPERATOR, "&&=")) && match(Node::EXPR1)){
+													result = true;
+													break;
+												}
+												else recoil(previousPosition);
+
+//												if(match(Token::NAME) && match(Token(Token::OPERATOR, "=")) && match(Node::VALUE)){
+//													result = true;
+//													break;
+//												}
+//												else recoil(previousPosition);
 
 											} break;
 
@@ -740,15 +792,23 @@ public:
 										}
 										else recoil(previousPosition);
 
+										if(true){
+													result = true;
+													break;
+										}
+										else recoil(previousPosition);
+
 									} break;
 				case Node::SPECIAL: {
-									//	if(match(Token(Token::KEYWORD, "for")) && match(Token::BRACE_LEFT) && match(Node::OPERATOR) && match(Token::SEMICOLON) &&
-									//		match(Node::OPERATOR) &&	match(Token::SEMICOLON) && match(Node::OPERATOR) && match(Token::BRACE_RIGHT) && match(Node::OPERATOR) 
-									//	) {
-									//				result = true;
-									//				break;
-									///	}
-									//else recoil(previousPosition);
+
+								if(match(Token(Token::KEYWORD, "foreach")) && match(Token::BRACE_LEFT) &&
+										match(Node::DECLARATION) && match(Token(Token::OPERATOR, ":")) && match(Node::EXPRESSION)&&
+								 		match(Token::BRACE_RIGHT) && match(Node::OPERATOR) 
+								 ) {
+													result = true;
+													break;
+										}
+									else recoil(previousPosition);
 
 								if(match(Token(Token::KEYWORD, "for")) && match(Token::BRACE_LEFT) &&
 										match(Node::FORTHING) && match(Token::SEMICOLON) && 
@@ -761,10 +821,274 @@ public:
 										}
 									else recoil(previousPosition);
 
+								if(		match(Token(Token::KEYWORD, "if")) && match(Token::BRACE_LEFT) &&
+										match(Node::EXPRESSION) &&
+								 		match(Token::BRACE_RIGHT) && match(Node::OPERATOR) &&
+								 		match(Token(Token::KEYWORD, "else")) && match(Node::OPERATOR)
+
+								 ) {
+													result = true;
+													break;
+										}
+									else recoil(previousPosition);
+
+								if(match(Token(Token::KEYWORD, "if")) && match(Token::BRACE_LEFT) &&
+										match(Node::EXPRESSION) &&
+								 		match(Token::BRACE_RIGHT) && match(Node::OPERATOR) 
+								 ) {
+													result = true;
+													break;
+										}
+									else recoil(previousPosition);
+
+								if(		match(Token(Token::KEYWORD, "while")) && match(Token::BRACE_LEFT) &&
+										match(Node::EXPRESSION) &&
+								 		match(Token::BRACE_RIGHT) && match(Node::OPERATOR) &&
+								 		match(Token(Token::KEYWORD, "finally")) && match(Node::OPERATOR) &&
+								 		match(Token(Token::KEYWORD, "else")) && match(Node::OPERATOR)
+
+								 ) {
+													result = true;
+													break;
+										}
+									else recoil(previousPosition);
+
+
+								if(		match(Token(Token::KEYWORD, "while")) && match(Token::BRACE_LEFT) &&
+										match(Node::EXPRESSION) &&
+								 		match(Token::BRACE_RIGHT) && match(Node::OPERATOR) &&
+								 		match(Token(Token::KEYWORD, "else")) && match(Node::OPERATOR)
+
+								 ) {
+													result = true;
+													break;
+										}
+									else recoil(previousPosition);
+
+								if(		match(Token(Token::KEYWORD, "while")) && match(Token::BRACE_LEFT) &&
+										match(Node::EXPRESSION) &&
+								 		match(Token::BRACE_RIGHT) && match(Node::OPERATOR) &&
+								 		match(Token(Token::KEYWORD, "finally")) && match(Node::OPERATOR)
+
+								 ) {
+													result = true;
+													break;
+										}
+									else recoil(previousPosition);
 
 
 
-									} break;
+								if(match(Token(Token::KEYWORD, "while")) && match(Token::BRACE_LEFT) &&
+										match(Node::EXPRESSION) &&
+								 		match(Token::BRACE_RIGHT) && match(Node::OPERATOR) 
+								 ) {
+													result = true;
+													break;
+										}
+									else recoil(previousPosition);
+
+								if(		match(Token(Token::KEYWORD, "init")) && match(Node::OPERATOR) &&
+										match(Token(Token::KEYWORD, "while")) && match(Token::BRACE_LEFT) &&
+										match(Node::EXPRESSION) &&
+								 		match(Token::BRACE_RIGHT) && match(Node::OPERATOR) &&
+								 		match(Token(Token::KEYWORD, "finally")) && match(Node::OPERATOR) &&
+								 		match(Token(Token::KEYWORD, "else")) && match(Node::OPERATOR)
+
+								 ) {
+													result = true;
+													break;
+										}
+									else recoil(previousPosition);
+
+
+								if(		match(Token(Token::KEYWORD, "init")) && match(Node::OPERATOR) &&
+										match(Token(Token::KEYWORD, "while")) && match(Token::BRACE_LEFT) &&
+										match(Node::EXPRESSION) &&
+								 		match(Token::BRACE_RIGHT) && match(Node::OPERATOR) &&
+								 		match(Token(Token::KEYWORD, "else")) && match(Node::OPERATOR)
+
+								 ) {
+													result = true;
+													break;
+										}
+									else recoil(previousPosition);
+
+								if(		match(Token(Token::KEYWORD, "init")) && match(Node::OPERATOR) &&
+										match(Token(Token::KEYWORD, "while")) && match(Token::BRACE_LEFT) &&
+										match(Node::EXPRESSION) &&
+								 		match(Token::BRACE_RIGHT) && match(Node::OPERATOR) &&
+								 		match(Token(Token::KEYWORD, "finally")) && match(Node::OPERATOR)
+
+								 ) {
+													result = true;
+													break;
+										}
+									else recoil(previousPosition);
+
+
+
+								if(		match(Token(Token::KEYWORD, "init")) && match(Node::OPERATOR) &&
+										match(Token(Token::KEYWORD, "while")) && match(Token::BRACE_LEFT) &&
+										match(Node::EXPRESSION) &&
+								 		match(Token::BRACE_RIGHT) && match(Node::OPERATOR) 
+								 ) {
+													result = true;
+													break;
+										}
+									else recoil(previousPosition);
+
+
+								if(		match(Token(Token::KEYWORD, "do")) && match(Node::OPERATOR) &&
+										match(Token(Token::KEYWORD, "while")) && match(Token::BRACE_LEFT) &&
+										match(Node::EXPRESSION) &&
+								 		match(Token::BRACE_RIGHT) &&
+								 		match(Token(Token::KEYWORD, "else")) && match(Node::OPERATOR)
+
+								 ) {
+													result = true;
+													break;
+										}
+									else recoil(previousPosition);
+
+								if(		match(Token(Token::KEYWORD, "do")) && match(Node::OPERATOR) &&
+										match(Token(Token::KEYWORD, "while")) && match(Token::BRACE_LEFT) &&
+										match(Node::EXPRESSION) &&
+								 		match(Token::BRACE_RIGHT)
+								 ) {
+													result = true;
+													break;
+										}
+									else recoil(previousPosition);
+
+								if(		match(Token(Token::KEYWORD, "switch")) && match(Token::BRACE_LEFT) &&
+										match(Node::EXPRESSION) &&
+								 		match(Token::BRACE_RIGHT) &&
+								 		match(Token::CURL_LEFT) && match(Node::CASES) && match(Token::CURL_RIGHT) &&
+								 		match(Token(Token::KEYWORD, "finally")) && match(Node::OPERATOR) &&
+								 		match(Token(Token::KEYWORD, "else")) && match(Node::OPERATOR)
+								 ) {
+													result = true;
+													break;
+										}
+									else recoil(previousPosition);
+
+								if(		match(Token(Token::KEYWORD, "switch")) && match(Token::BRACE_LEFT) &&
+										match(Node::EXPRESSION) &&
+								 		match(Token::BRACE_RIGHT) &&
+								 		match(Token::CURL_LEFT) && match(Node::CASES) && match(Token::CURL_RIGHT) &&
+								 		match(Token(Token::KEYWORD, "else")) && match(Node::OPERATOR)
+								 ) {
+													result = true;
+													break;
+										}
+									else recoil(previousPosition);
+
+
+								if(		match(Token(Token::KEYWORD, "switch")) && match(Token::BRACE_LEFT) &&
+										match(Node::EXPRESSION) &&
+								 		match(Token::BRACE_RIGHT) &&
+								 		match(Token::CURL_LEFT) && match(Node::CASES) && match(Token::CURL_RIGHT)
+
+								 ) {
+													result = true;
+													break;
+										}
+									else recoil(previousPosition);
+
+								if(	
+										match(Token(Token::KEYWORD, "return")) && 
+										match(Node::EXPRESSION) &&
+								 		match(Token::SEMICOLON)
+
+								 ) {
+													result = true;
+													break;
+										}
+								else recoil(previousPosition);
+
+								if(	
+										match(Token(Token::KEYWORD, "break")) && 
+										match(Node::NAME1) &&
+								 		match(Token::SEMICOLON)
+
+								 ) {
+													result = true;
+													break;
+										}
+								else recoil(previousPosition);
+
+								if(	
+										match(Token(Token::KEYWORD, "break")) && 
+								 		match(Token::SEMICOLON)
+
+								 ) {
+													result = true;
+													break;
+										}
+								else recoil(previousPosition);
+
+								if(	
+										match(Token(Token::KEYWORD, "goto")) && 
+										match(Node::NAME1) &&
+								 		match(Token::SEMICOLON)
+
+								 ) {
+													result = true;
+													break;
+										}
+								else recoil(previousPosition);
+
+
+
+								} break;
+
+
+				case Node::CASES: {
+										if(match(Node::CASE) && match(Node::CASES)){
+													result = true;
+													break;
+										}
+										else recoil(previousPosition);
+
+										if(match(Node::CASE)){
+													result = true;
+													break;
+										}
+										else recoil(previousPosition);
+
+										if(true){
+											result = true;
+													break;
+										}
+										else recoil(previousPosition);
+
+
+				} break;
+
+				case Node::CASE: {
+						if(
+							match(Token(Token::KEYWORD, "case")) && match(Node::EXPRESSION) && 
+							match(Token(Token::OPERATOR, ":")) &&
+							match(Node::OPERATOR) &&
+							match(Token(Token::KEYWORD, "continue")) &&  match(Token::SEMICOLON)
+						){
+									result = true;
+									break;
+						}
+						else recoil(previousPosition);
+										
+						if(
+							match(Token(Token::KEYWORD, "case")) && match(Node::EXPRESSION) && 
+							match(Token(Token::OPERATOR, ":")) &&
+							match(Node::OPERATOR)
+						){
+									result = true;
+									break;
+						}
+						else recoil(previousPosition);
+
+
+				} break;
 
 
 

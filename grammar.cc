@@ -1,7 +1,7 @@
 +<body> ::= {<operators>}
 +<operators> ::= <operator><operators>|NONE
 <operator> ::= 
-				<special>
++				<special>
 +				;
 +				<expression>;
 +				<declaration>;
@@ -9,45 +9,52 @@
 + 				<funcdef>
 
 <forthing> ::= 
-					<expression>
-					<declaration>
-					NONE
+				+	<expression>
+				+	<declaration>
+				-	NONE
 
-<special> ::= 
-				for(<forthing>;<forthing>;<forthing>)<operator>
-				for(<vardef> : <expression>)<action>
-				if(<condition>)<action>
-				if(<condition>) <action> else <action>
++<special> ::= 
+	+			for(<forthing>;<forthing>;<forthing>)<operator>
+	+			foreach(<vardef> : <expression>)<operator>
+	+			if(<expression>)<operator>
+	+			if(<expression>) <operator> else <operator>
 
-				while(<condition>)<action>
-				init<action> while(condition)<action>
-				init<action> while(conditio)<action> finally<action>
-				while(conditio)<action> finally<action>
+	+			while(<expression>) <operator>
+	+			init <operator> while(<expression>) <operator>
+	+			init <operator> while(<expression>) <operator> finally <operator>
+	+			while(<expression>) <operator> finally <operator>
 
-				while(<condition>)<action>else<action>
-				init<action> while(condition)<action>else<action>
-				init<action> while(conditio)<action> finally<action>else<action>
-				while(conditio)<action> finally<action>else<action>
+	+			while(<expression>)<operator>else<operator>
+	+			init<operator> while(<expression>)<operator> else <operator>
+	+			init<operator> while(<expression>) <operator> finally <operator> else <operator>
+	+			while(<expression>) <operator> finally <operator> else <operator>
 
-				do <action> while(condition)
-				do <action> while(condition) else <action>
+	+			do <operator> while(<expression>)
+	+			do <operator> while(<expression>) else <operator>
 
-				switch (<expression>){<cases>}
-				switch(<expression>){<cases>}else<action>
+	+			switch (<expression>){<cases>}
+	+			switch(<expression>){<cases>} else<operator>
+				return <expression>;
 
-<cases> ::= <case><cases>
-			NONE
-
-+<condition> ::= 
-				!<condition>
-				<atomic_condition> || <condition>
-				<atomic_condition>
++<cases> ::= 
++			<case><cases>
++			NONE
 
 
-+<atomic_condition> ::= 	
-						<andCond>
-						(<condition>)
-						<expr1>
++<case> ::=	
+		+	case <expression> : <operator> continue;
+		+	case <expression> : <operator>
+
+//<condition> ::= 
+//				!<condition>
+//				<atomic_condition> || <condition>
+//				<atomic_condition>
+
+
+//<atomic_condition> ::= 	
+//						<andCond>
+//						(<condition>)
+//						<expr1>
 //<andCond> ::= 	
 //				<comparision> && <andCond>
 //				<comparision>
@@ -64,10 +71,10 @@
 //						<expression> is <expression>
 
 
-<expression> ::= 
-					<funcall>
-					<expr1>
-					<assignment>
++<expression> ::= 	
++					<assignment>
++					<l_or>
+					
 
 
 
@@ -89,26 +96,11 @@
 				<expr1>
 				<assignment>
 				<value>
-				<list>
+				<argList>
 
 
 
-+<value> ::= 
-			+<expr1>
-			+<name>
-			+<constant>
-			+<funcall>
-			+<funcall>.<value>
-			+<funcall>-><value>
-			<list>
 
-
-+<name> :: =	
-			<namespace>::<name>
-			*<name1>
-			<name1>			
-			<name1> -> <name>
-			<name1>.<name>
 
 +<name1>	::= 
 			<ID>
@@ -133,21 +125,46 @@
 +<letter> ::= ALPHABET + _
 +<digit> :: = DIGIGIT
 
++<value> ::= 
+			<name>[<expression>]
+			<funcall>[<expression]
+			+<name>
+			+<constant>
+			+<funcall>
+			+<funcall>.<value>
+			+<funcall>-><value>
+			+<list>
+
+
++<name> :: =	
+			<namespace>::<name>
+			*<name1>
+			<name1>			
+			<name1> -> <name>
+			<name1>.<name>
 
 <assignment> ::= 
 	+<name> = <value>
-	<list> = <list>
+	+<name> += <value>
+	+<name> /= <value>
+	+<name> -= <value>
+	+<name> *= <value>
+	+<name> %= <value>
+	+<name> |= <value>
+	+<name> ||= <value>
+	+<name> &= <value>
+	+<name> &&= <value>
+	+<name> ~= <value>
 
-
-<expr1> ::=		
+/*
++<expr1> ::=		
 		<expr2> 
 		<expr2> {<<, >>} <expr1>
 
 <expr2> ::= 
 			-<condition>
 			<condition>
-			<expr3>
-			<expr2> {+, -} <expr3>
+
 
 +<expr3> ::= 
 			<expr4>
@@ -167,6 +184,69 @@
 			(<expr2>)
 			(<expr1>)
 			<value>
+
+
+*/
+
+<l_or> ::=	
+			<l_and>
+			<l_and> | <l_or>
+
+<l_and> ::= 
+				<is_in_Expression> 
+				<is_in_Expression> & <l_and>
+
+<is_in_Expression> ::=
+			<comparision>
+			<comparision> is <comparision>
+			<comparision> in <comparision>
+
+<comparision> ::=
+				<b_or>
+				<b_or> {>=, ==, <=, != } <b_or>
+
+
+
+<b_or> ::=	
+			<b_xor>
+			<b_xor> | <b_or>
+
+<b_xor> ::=	
+			<b_and>
+			<b_and> | <b_xor>
+
+<b_and> ::= 
+				<expr1> 
+				<expr1> & <b_and>
+<expr1> ::=
+			<expr2> {<< ,>>} <expr1>
+			<expr2>
+
+
+<expr2> ::= 							
+			<expr3> {+, -} <expr2>
+			<expr2>
+
+
+<expr3> ::=
+			<expr4> {*, /, %} <expr3>
+			<expr4>
+			
+
+
+
+<expr4> ::=	
+			~<expr5>
+			!<expr5>
+			-<expr5>
+			+<expr5>
+
+<expr5> ::= 
+			<expr6> ** <expr6>
+<expr6> ::= 
+			(<expression>)
+			<value>
+
 		
 
 
