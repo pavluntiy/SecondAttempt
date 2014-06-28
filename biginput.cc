@@ -135,3 +135,29 @@ else return 0;
 goto asdf__1;
 break;
 break asdf_;
+
+
+if(a >= b && c == q){
+
+}
+
+if(a >= b && c == q || a is b && q >= c && a in q){
+
+}
+
+a is b  && a in q;
+a in q;
+
+- a ** (-b);
+(a >= c) ** (a in a - v + foo123("asdf"));
+
+(a >= c) ** (123);
+(a >= c);
+
+(((a - 0) + ('' * 9)));
+
+!(((a - 0) + ('' * 9)));
+'';
+if(a >= b && c == q || a is b && q >= c && a in q){}
+
+p /=a && b && c || a + v + c || a|b|~c;

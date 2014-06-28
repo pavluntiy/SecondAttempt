@@ -44,6 +44,12 @@ public:
 		EXPR3, 
 		EXPR4, 
 		EXPR5,
+		EXPR6,
+		L_OR,
+		L_AND,
+		B_OR,
+		B_XOR,
+		B_AND,
 		TYPE, 
 		VARQ, 
 		TYPEDEF, 
@@ -108,6 +114,16 @@ public:
 			case EXPR3: 		return "EXPR3";
 			case EXPR4: 		return "EXPR4";
 			case EXPR5:			return "EXPR5";
+			case EXPR6:			return "EXPR6";
+
+			case L_OR:			return "L_OR";
+			case L_AND:			return "L_AND";
+
+			case B_OR:			return "B_OR";
+			case B_XOR:			return "B_XOR";
+			case B_AND:			return "B_AND";
+
+
 			case TYPE: 			return "TYPE";
 			case VARQ: 			return "VARQ";
 			case TYPEDEF: 		return "TYPEDEF";

@@ -163,7 +163,37 @@ public:
 
 												
 											} break;
-				case Node::EXPR5: 			{
+
+				case Node::EXPR6: 			{
+												if(match(Token::BRACE_LEFT) && match(Node::EXPRESSION) && match(Token::BRACE_RIGHT)){
+													result = true;
+													break;
+												}
+												else recoil(previousPosition);
+
+												if (match(Node::VALUE)) {
+													result = true;
+													break;
+												}
+												else recoil(previousPosition);
+											
+											} break;
+
+				case Node::EXPR5: 			{										
+												if(match(Node::EXPR6) && match(Token(Token::OPERATOR, "**")) && match(Node::EXPR6)){
+													result = true;
+													break;
+												}
+												else recoil(previousPosition);
+
+												if(match(Node::EXPR6)){
+													result = true;
+													break;
+												}
+												else recoil(previousPosition);
+											} break;	
+
+				case Node::EXPR4: 			{
 												if(match(Token(Token::OPERATOR, "~")) && match(Node::EXPR5)){
 													result = true;
 													break;
@@ -179,46 +209,13 @@ public:
 													break;
 												}
 												else recoil(previousPosition);
-
-												if(match(Node::ARGLIST)){
+												if(match(Token(Token::OPERATOR, "+")) && match(Node::EXPR5)){
 													result = true;
 													break;
 												}
 												else recoil(previousPosition);
 
-												if(match(Token::BRACE_LEFT) && match(Node::EXPR4) && match(Token::BRACE_RIGHT)){
-													result = true;
-													break;
-												}
-												else recoil(previousPosition);
-
-												if(match(Token::BRACE_LEFT) && match(Node::EXPR3) && match(Token::BRACE_RIGHT)){
-													result = true;
-													break;
-												}
-												else recoil(previousPosition);
-
-												if(match(Token::BRACE_LEFT) && match(Node::EXPR2) && match(Token::BRACE_RIGHT)){
-													result = true;
-													break;
-												}
-												else recoil(previousPosition);
-
-												if(match(Token::BRACE_LEFT) && match(Node::EXPR1) && match(Token::BRACE_RIGHT)){
-													result = true;
-													break;
-												}
-												else recoil(previousPosition);
-
-												if(match(Node::VALUE)){
-													result = true;
-													break;
-												}
-												else recoil(previousPosition);
-											} break;
-
-				case Node::EXPR4: 			{										
-												if(match(Node::EXPR5) && match(Token(Token::OPERATOR, "**")) && match(Node::EXPR5)){
+												if(match(Token(Token::OPERATOR, "+")) && match(Node::EXPR5)){
 													result = true;
 													break;
 												}
@@ -229,7 +226,11 @@ public:
 													break;
 												}
 												else recoil(previousPosition);
-											} break;	
+
+
+											} break;
+
+				
 
 				case Node::EXPR3: 			{										
 												if(match(Node::EXPR4) && match(Token(Token::OPERATOR, "*")) && match(Node::EXPR3)){
@@ -244,7 +245,7 @@ public:
 												}
 												else recoil(previousPosition);
 
-												if(match(Node::EXPR4) && match(Token(Token::OPERATOR, "%%")) && match(Node::EXPR3)){
+												if(match(Node::EXPR4) && match(Token(Token::OPERATOR, "%")) && match(Node::EXPR3)){
 													result = true;
 													break;
 												}
@@ -297,7 +298,139 @@ public:
 												else recoil(previousPosition);
 											} break;	
 
-					case Node::CONDITION: {										
+					case Node::B_AND: 			{										
+												if(match(Node::EXPR1) && match(Token(Token::OPERATOR, "&")) && match(Node::B_AND)){
+													result = true;
+													break;
+												}
+												else recoil(previousPosition);
+
+
+												if(match(Node::EXPR1)){
+													result = true;
+													break;
+												}
+												else recoil(previousPosition);
+											} break;
+
+					case Node::B_XOR: 			{										
+												if(match(Node::B_AND) && match(Token(Token::OPERATOR, "^")) && match(Node::B_XOR)){
+													result = true;
+													break;
+												}
+												else recoil(previousPosition);
+
+
+												if(match(Node::B_AND)){
+													result = true;
+													break;
+												}
+												else recoil(previousPosition);
+											} break;
+
+					case Node::B_OR: 			{										
+												if(match(Node::B_XOR) && match(Token(Token::OPERATOR, "|")) && match(Node::B_OR)){
+													result = true;
+													break;
+												}
+												else recoil(previousPosition);
+
+
+												if(match(Node::B_XOR)){
+													result = true;
+													break;
+												}
+												else recoil(previousPosition);
+											} break;
+
+				case Node::COMPARISION: {										
+												if(match(Node::B_OR) && match(Token(Token::OPERATOR, "==")) && match(Node::B_OR)){
+													result = true;
+													break;
+												}
+												else recoil(previousPosition);
+
+												if(match(Node::B_OR) && match(Token(Token::OPERATOR, ">=")) && match(Node::B_OR)){
+													result = true;
+													break;
+												}
+												else recoil(previousPosition);
+
+												if(match(Node::B_OR) && match(Token(Token::OPERATOR, "<=")) && match(Node::B_OR)){
+													result = true;
+													break;
+												}
+												else recoil(previousPosition);
+
+												if(match(Node::B_OR) && match(Token(Token::OPERATOR, "!=")) && match(Node::B_OR)){
+													result = true;
+													break;
+												}
+												else recoil(previousPosition);
+
+												if(match(Node::B_OR)){
+													result = true;
+													break;
+												}
+												else recoil(previousPosition);
+
+											} break;
+
+
+						case Node::IS_IN_EXPRESSION: {
+										if(match(Node::COMPARISION) && match(Token(Token::KEYWORD, "is")) && match(Node::COMPARISION)){
+													result = true;
+													break;
+										}
+										else recoil(previousPosition);
+
+										if(match(Node::COMPARISION) && match(Token(Token::KEYWORD, "in")) && match(Node::COMPARISION)){
+													result = true;
+													break;
+										}
+										else recoil(previousPosition);
+
+										if(match(Node::COMPARISION)){
+													result = true;
+													break;
+										}
+										else recoil(previousPosition);
+
+
+									} break;
+
+					case Node::L_AND: 			{										
+												if(match(Node::IS_IN_EXPRESSION) && match(Token(Token::OPERATOR, "&&")) && match(Node::L_AND)){
+													result = true;
+													break;
+												}
+												else recoil(previousPosition);
+
+
+												if(match(Node::IS_IN_EXPRESSION)){
+													result = true;
+													break;
+												}
+												else recoil(previousPosition);
+											} break;
+
+					case Node::L_OR: 			{										
+												if(match(Node::L_AND) && match(Token(Token::OPERATOR, "||")) && match(Node::L_OR)){
+													result = true;
+													break;
+												}
+												else recoil(previousPosition);
+
+
+												if(match(Node::L_AND)){
+													result = true;
+													break;
+												}
+												else recoil(previousPosition);
+											} break;
+
+
+/*					case Node::CONDITION: {										
 												if(match(Token(Token::OPERATOR, "!")) && match(Node::CONDITION)){
 													result = true;
 													break;
@@ -367,7 +500,7 @@ public:
 											
 
 					} break;
-
+*/
 
 
 					case Node::EXPRESSION: {			
@@ -382,7 +515,7 @@ public:
 												}
 												else recoil(previousPosition);
 
-												if(match(Node::EXPR1)){
+												if(match(Node::L_OR)){
 													result = true;
 													break;
 												}
@@ -402,61 +535,61 @@ public:
 
 					case Node::ASSIGNMENT: {		
 
-												if(match(Token::NAME) && match(Token(Token::OPERATOR, "=")) && match(Node::EXPR1)){
+												if(match(Token::NAME) && match(Token(Token::OPERATOR, "=")) && match(Node::L_OR)){
 													result = true;
 													break;
 												}
 												else recoil(previousPosition);
 
-												if(match(Token::NAME) && match(Token(Token::OPERATOR, "+=")) && match(Node::EXPR1)){
+												if(match(Token::NAME) && match(Token(Token::OPERATOR, "+=")) && match(Node::L_OR)){
 													result = true;
 													break;
 												}
 												else recoil(previousPosition);
 
-												if(match(Token::NAME) && match(Token(Token::OPERATOR, "-=")) && match(Node::EXPR1)){
+												if(match(Token::NAME) && match(Token(Token::OPERATOR, "-=")) && match(Node::L_OR)){
 													result = true;
 													break;
 												}
 												else recoil(previousPosition);
 
-												if(match(Token::NAME) && match(Token(Token::OPERATOR, "/=")) && match(Node::EXPR1)){
+												if(match(Token::NAME) && match(Token(Token::OPERATOR, "/=")) && match(Node::L_OR)){
 													result = true;
 													break;
 												}
 												else recoil(previousPosition);
 
-												if(match(Token::NAME) && match(Token(Token::OPERATOR, "%=")) && match(Node::EXPR1)){
+												if(match(Token::NAME) && match(Token(Token::OPERATOR, "%=")) && match(Node::L_OR)){
 													result = true;
 													break;
 												}
 												else recoil(previousPosition);
 
-												if(match(Token::NAME) && match(Token(Token::OPERATOR, "*=")) && match(Node::EXPR1)){
+												if(match(Token::NAME) && match(Token(Token::OPERATOR, "*=")) && match(Node::L_OR)){
 													result = true;
 													break;
 												}
 												else recoil(previousPosition);
 
-												if(match(Token::NAME) && match(Token(Token::OPERATOR, "|=")) && match(Node::EXPR1)){
+												if(match(Token::NAME) && match(Token(Token::OPERATOR, "|=")) && match(Node::L_OR)){
 													result = true;
 													break;
 												}
 												else recoil(previousPosition);
 
-												if(match(Token::NAME) && match(Token(Token::OPERATOR, "||=")) && match(Node::EXPR1)){
+												if(match(Token::NAME) && match(Token(Token::OPERATOR, "||=")) && match(Node::L_OR)){
 													result = true;
 													break;
 												}
 												else recoil(previousPosition);
 
-												if(match(Token::NAME) && match(Token(Token::OPERATOR, "&=")) && match(Node::EXPR1)){
+												if(match(Token::NAME) && match(Token(Token::OPERATOR, "&=")) && match(Node::L_OR)){
 													result = true;
 													break;
 												}
 												else recoil(previousPosition);
 
-												if(match(Token::NAME) && match(Token(Token::OPERATOR, "&&=")) && match(Node::EXPR1)){
+												if(match(Token::NAME) && match(Token(Token::OPERATOR, "&&=")) && match(Node::L_OR)){
 													result = true;
 													break;
 												}
@@ -471,32 +604,7 @@ public:
 											} break;
 
 
-					case Node::COMPARISION: {										
-												if(match(Node::EXPR1) && match(Token(Token::OPERATOR, "==")) && match(Node::EXPR1)){
-													result = true;
-													break;
-												}
-												else recoil(previousPosition);
 
-												if(match(Node::EXPR1) && match(Token(Token::OPERATOR, ">=")) && match(Node::EXPR1)){
-													result = true;
-													break;
-												}
-												else recoil(previousPosition);
-
-												if(match(Node::EXPR1) && match(Token(Token::OPERATOR, "<=")) && match(Node::EXPR1)){
-													result = true;
-													break;
-												}
-												else recoil(previousPosition);
-
-												if(match(Node::EXPR1) && match(Token(Token::OPERATOR, "!=")) && match(Node::EXPR1)){
-													result = true;
-													break;
-												}
-												else recoil(previousPosition);
-
-											} break;
 
 					case Node::FUNCALL: {
 
@@ -658,21 +766,7 @@ public:
 
 									} break;
 
-					case Node::IS_IN_EXPRESSION: {
-										if(match(Node::EXPR1) && match(Token(Token::NAME, "is")) && match(Node::EXPRESSION)){
-													result = true;
-													break;
-										}
-										else recoil(previousPosition);
-
-										if(match(Node::EXPR1) && match(Token(Token::NAME, "in")) && match(Node::EXPRESSION)){
-													result = true;
-													break;
-										}
-										else recoil(previousPosition);
-
-
-									} break;
+				
 
 					case Node::OPERATOR: {
 										if(match(Node::SPECIAL)){

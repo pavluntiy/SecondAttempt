@@ -144,17 +144,17 @@
 			<name1>.<name>
 
 <assignment> ::= 
-	+<name> = <value>
-	+<name> += <value>
-	+<name> /= <value>
-	+<name> -= <value>
-	+<name> *= <value>
-	+<name> %= <value>
-	+<name> |= <value>
-	+<name> ||= <value>
-	+<name> &= <value>
-	+<name> &&= <value>
-	+<name> ~= <value>
+	+<name> = <expression>
+	+<name> += <expression>
+	+<name> /= <expression>
+	+<name> -= <expression>
+	+<name> *= <expression>
+	+<name> %= <expression>
+	+<name> |= <expression>
+	+<name> ||= <expression>
+	+<name> &= <expression>
+	+<name> &&= <expression>
+	+<name> ~= <expression>
 
 /*
 +<expr1> ::=		
