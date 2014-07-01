@@ -55,6 +55,8 @@ public:
 		TYPEDEF, 
 		PREDEF_TYPE,
 		FUNCDEF,
+		DECL_LIST,
+		DECL_ATOM,
 		FORTHING
 	}; 
 
@@ -129,6 +131,8 @@ public:
 			case TYPEDEF: 		return "TYPEDEF";
 			case PREDEF_TYPE:	return "PREDEF_TYPE";
 			case FUNCDEF:	return "FUNCDEF";
+			case DECL_LIST:	return "DECL_LIST";
+			case DECL_ATOM:	return "DECL_ATOM";
 			case FORTHING: return "FORTHING";
 		}
 	}

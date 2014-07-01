@@ -11,7 +11,7 @@
 <forthing> ::= 
 				+	<expression>
 				+	<declaration>
-				-	NONE
+				+	NONE
 
 +<special> ::= 
 	+			for(<forthing>;<forthing>;<forthing>)<operator>
@@ -127,7 +127,7 @@
 
 +<value> ::= 
 			<name>[<expression>]
-			<funcall>[<expression]
+			<funcall>[<expression>]
 			+<name>
 			+<constant>
 			+<funcall>
@@ -252,17 +252,17 @@
 
 <declaration> ::=
  +				<type> <list>
- -				<varQ> <declaration>
+ //-				<varQ> <declaration>
 
 <type> ::= 
--			<class>
--			<typedef>
+//-			<class>
+//-			<typedef>
 +			<predef_type>
 -			(<type>*)
 -			(<type> &)
 
 /////
-<class> ::= [<classQ>]class <ID> [: <supers>] <classbody>
+/*<class> ::= [<classQ>]class <ID> [: <supers>] <classbody>
 
 				
 <supers> ::= [<inheritQ>] <ID>, <supers> 
@@ -290,10 +290,20 @@
 <classMembers> ::= <funcdef><classMembers>
 					<declaration><classMembers>
 					NONE
-				
+*/				
 
 
-<funcdef> ::= <type> <name> (<list>) <body>
++<funcdef> ::= <type> <name> (<decllist>) <body>
+
++<decllist> ::=	
+				<decl_atom>
+				<decl_atom>,<decllist>
+				NONE
+
++<decl_atom> ::=	
+				<type> <assignment>
+				<type> <name>
+
 
 
 

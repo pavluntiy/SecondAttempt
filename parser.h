@@ -99,6 +99,17 @@ public:
 		else{
 			switch(what){
 				case Node::VALUE: {				
+												if(match(Node::NAME) && match(Token::BRACKET_LEFT) && match(Node::EXPRESSION) && match(Token::BRACKET_RIGHT)){
+													result = true;
+													break;
+												}
+												else recoil(previousPosition);
+
+												if(match(Node::FUNCALL) && match(Token::BRACKET_LEFT) && match(Node::EXPRESSION) && match(Token::BRACKET_RIGHT)){
+													result = true;
+													break;
+												}
+												else recoil(previousPosition);
 
 												if(match(Node::ARGLIST)){
 													result = true;
@@ -855,7 +866,43 @@ public:
 									} break;
 
 				case Node::FUNCDEF: {
-										if(match(Node::TYPE) && match(Node::NAME) && match(Node::ARGLIST) && match(Node::BODY)) {
+										if(match(Node::TYPE) && match(Node::NAME) && match(Token::BRACE_LEFT) && match(Node::DECL_LIST) && match(Token::BRACE_RIGHT) && match(Node::BODY)) {
+													result = true;
+													break;
+										}
+										else recoil(previousPosition);
+
+
+									} break;
+				case Node::DECL_LIST: {
+										if(match(Node::DECL_ATOM) && match(Token::COMMA) && match(Node::DECL_LIST)) {
+													result = true;
+													break;
+										}
+										else recoil(previousPosition);
+
+										if(match(Node::DECL_ATOM)) {
+													result = true;
+													break;
+										}
+										else recoil(previousPosition);
+
+										if(true) {
+													result = true;
+													break;
+										}
+										else recoil(previousPosition);
+
+
+									} break;
+				case Node::DECL_ATOM: {
+										if(match(Node::TYPE) && match(Node::ASSIGNMENT)) {
+													result = true;
+													break;
+										}
+										else recoil(previousPosition);
+
+										if(match(Node::TYPE) && match(Node::NAME)) {
 													result = true;
 													break;
 										}

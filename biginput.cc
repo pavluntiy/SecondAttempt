@@ -161,3 +161,45 @@ a in q;
 if(a >= b && c == q || a is b && q >= c && a in q){}
 
 p /=a && b && c || a + v + c || a|b|~c;
+
+int main (int args, int argv = (8, "ololo", qi)){
+	cout << "Hurray!";
+	bla();
+	float q = 1**0.78;
+}
+
+main(12, 34);
+
+int main (int args, int argv = (8, "ololo", qi)){
+	cout << "Hurray!";
+	bla();
+	float q = 1**0.78;
+}
+
+int main (int args){
+	cout << "Hurray!";
+	bla();
+	float q = 1**0.78;
+}
+
+int main (){
+	cout << "Hurray!";
+	bla();
+	float q = 1**0.78;
+	return 123 ** 34 - a + v;
+}
+
+main(12, argv = 34);
+a = main();
+
+0b010101.0101;
+00124;
+0.0762;
+00.0762;
+0x00000.123;
+0x012;
+
+0x00000._123_234_234__234;
+
+a[123];
+foo.qwe()[x + y ** 3 || a == v];

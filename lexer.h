@@ -114,6 +114,9 @@ public:
 
 		if (zeroFound){
 			buffer = "0";
+			if(currentChar != '0'){
+				return makeToken(Token::NONE);
+			}
 			while (Alphabet::isOctalDigit(currentChar)|| currentChar == '_' || currentChar == '.' && !find("..")){
 					if (currentChar == '.'){
 						isFloat = true;
@@ -144,9 +147,12 @@ public:
 
 	Token tryAndGetDecimal(bool zeroFound){
 		Position startPosition = sourcePosition;
-		std::string buffer;
+		std::string buffer = "";
+		if(zeroFound){
+			buffer += '0';
+		}
 		bool isFloat = false;
-		if (Alphabet::isDigit(currentChar)){
+		if (Alphabet::isDigit(currentChar) || zeroFound){
 			while (Alphabet::isDigit(currentChar)|| currentChar == '_' || currentChar == '.' && !find("..")){
 				if (currentChar == '.'){
 							isFloat = true;
