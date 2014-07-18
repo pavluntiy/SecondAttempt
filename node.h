@@ -19,6 +19,7 @@ public:
 		OPERATORS, 
 		SPECIAL, 
 		DECLARATION, 
+		VARLIST,
 		CONDITION, 
 		EXPRESSION, 
 		VARDEF, 
@@ -145,6 +146,7 @@ public:
 			case OPERATORS: return "OPERATORS";
 			case SPECIAL: 	return "SPECIAL";
 			case DECLARATION: return "DECLARATION";
+			case VARLIST: return "VARLIST";
 			case CONDITION: 	return "CONDITION";
 			case EXPRESSION: 	return "EXPRESSION";
 			case VARDEF:		return "VARDEF";

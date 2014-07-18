@@ -24,7 +24,10 @@ void dfs (Node *node, string shift = ""){
 	if(node->children.size() > 0){
 	 	treeOut << shift;
 	}
-	treeOut   << " )\n";
+	else {
+		treeOut << ' ';
+	}
+	treeOut   << ")\n";
 	
 }
 void draw(Node *tree, string str){

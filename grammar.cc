@@ -30,7 +30,7 @@
 	+			while(<expression>) <operator> finally <operator> else <operator>
 
 	+			do <operator> while(<expression>)
-	+			do <operator> while(<expression>) else <operator>
+//	+			do <operator> while(<expression>) else <operator>
 
 	+			switch (<expression>){<cases>}
 	+			switch(<expression>){<cases>} else<operator>
@@ -251,9 +251,14 @@
 
 
 <declaration> ::=
- +				<type> <list>
+ +				<type> <varlist>
  //-				<varQ> <declaration>
 
+<varlist> ::=
+			<assignment>, <varlist>
+			<name>, <varlist>;
+			<assignment>
+			<name>
 <type> ::= 
 //-			<class>
 //-			<typedef>
