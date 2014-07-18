@@ -7,15 +7,19 @@
 #include <vector>
 #include <string>
 #include "recognitionexception.h"
+#include <fstream>
 
 #include "node.h"
 //#include "tree.h"
 
 const bool ignore = true;
 
+ofstream log("log.out");
 class Parser {
 public:
 	//bool dontConsume = false;
+	int depth;
+	bool logDepth;
 	vector<Token> input;
 	Node *tree;
 	int currentPosition, previousPosition;
@@ -23,10 +27,10 @@ public:
 	map<pair<Node::NodeType, int>, pair<bool, int> > memo;
 
 	void recoil(int previousPosition = 0){
-		cout << "\t=>Recoiled from " << currentPosition << " to " << previousPosition << "; ";
+		log << "\t=>Recoiled from " << currentPosition << " to " << previousPosition << ", current token = ";
 		currentPosition = previousPosition;
 		currentToken = input[currentPosition];
-		cout << currentToken.typeToText() << "\n";
+		log << currentToken.typeToText() << "\n";
 	}
 
 	void consume(bool stop = false){
@@ -52,53 +56,69 @@ public:
 	}
 
 	bool match(Token::Type type){
-			cout << "\t Trying " << Token(type).typeToText()<< "\n";
+			log << "Looking for " << Token(type).typeToText() << " on position "  << currentPosition;
+			depth++;
+			if(logDepth){
+				log <<" on depth = " << depth;
+			}
+			log << "\n";
 		if(type == currentToken.type){
-			cout << "\t Found " << currentToken.typeToText()<< "\n";
+			log << "\t Found " << currentToken.typeToText()<< "\n";
 			consume();//dontConsume);
+			depth--;
 			return true;
 		}else {
 			if(type == Token::CURL_RIGHT || type == Token::BRACE_RIGHT){
-				cout << ("\t\tYou could have missed " + typeToText(type) + " on position " + currentToken.position.toString() + " (Token # " + std::to_string(currentPosition) +")");
+				log << "---!WARNING!---\n";
+				log << ("\t\tYou could have missed " + typeToText(type) + " on position " + currentToken.position.toString() + " (Token # " + std::to_string(currentPosition) +")");
 			}
-
-			cout << "\t Tried " << Token(type).typeToText() << ", got " << currentToken.typeToText() << "\n";
+			depth--;
+			log << "\t Failed to find " << Token(type).typeToText() << ", got " << currentToken.typeToText() << " on position "  << currentPosition << "\n";
 			return false;
 		}
 	}
 	bool match(Token token){
-		cout << "\t\tTrying " << token.typeToText() << token.getText() << "\n";
+		depth++;
+		log << "Looking for " << token.typeToText() << " \"" <<token.getText() << " \" on position "  << currentPosition;
+		if(logDepth){
+			log <<" on depth = " << depth;
+		}
+		log << "\n";
 		if(currentToken.type == token.type && currentToken.text == token.text){
-			cout << "\t\tFound " << token.typeToText() << token.getText() << "\n";
+			log << "\t Found  "<< token.typeToText() << " \"" <<token.getText() << " \" on position "  << currentPosition << "\n";
 			consume();//dontConsume);
+			depth--;
 			return true;
 		}
 		
 
 		if(token.text == "" && currentToken.type == token.type){
-
+			depth--;
 			consume();//dontConsume);
 			return true;
 		}
 
-
-
-					cout << "\t\tFailed " << currentToken.typeToText() << currentToken.getText() << "\n";
+		depth--;
+		log << "\t Failed to find "  << token.typeToText() << ", \"" << token.getText() << "\", got " << currentToken.typeToText() << ", \"" << currentToken.getText()<<  " \" on position "  << currentPosition << "\n";
 		return false;
 	}
 
 	bool match(Node::NodeType what){
-
-		cout << "Looking for " << Node(what).typeToText() << " on position "  << currentPosition << "\n";
+		depth++;
+		log << "Looking for " << Node(what).typeToText() << " on position "  << currentPosition;
+		if(logDepth){
+			log <<" on depth = " << depth;
+		}
+		log << "\n";
 		int previousPosition = currentPosition;
 		bool result = false;
 		if(memo.count(make_pair(what, currentPosition))){	
 			result =  memo[make_pair(what, currentPosition)].first;
-			cout << "\t\t!!!!!!Got in memo: " << Node(what).typeToText() << " on position "  << currentPosition << " is " << result << "\n\t\t\t";
+			log << "\t\tGot in memo: " << Node(what).typeToText() << " on position "  << currentPosition << " is " << result << "\n";
 			if(result){
-				cout << "previous position = " << currentPosition << " ";
+				log << "\t\t\tFrom position " << currentPosition << " and token " << currentToken.typeToText() << ", " << currentToken.getText() << " to \n ";
 				recoil(memo[make_pair(what, currentPosition)].second);
-				cout << "skipped to position " << currentPosition << "\n";
+				log << "\t\t\t\tnew position " << currentPosition << "and new token " << currentToken.typeToText() << ", " << currentToken.getText()  << "\n";
 			}
 			
 			
@@ -1249,10 +1269,14 @@ public:
 				default: throw RecognitionException ("Some trash (" +currentToken.typeToText() + currentToken.getText() + ")on position " + currentToken.position.toString());
 			}
 		}
-		cout << "Result for " << Node(what).typeToText() << " on position "  << previousPosition << " is " << result<<"\n";
-		cout << "\tNow on " << currentPosition << "\n";
+		log << "Result for " << Node(what).typeToText() << " on position "  << previousPosition << " is " << result<<"\n";
+		log << "\tNow on " << currentPosition ;
+		if(logDepth){
+			log << " was on depth " << depth << "\n";
+		}
+		log << "\n";
 		memo[make_pair(what, previousPosition)] = make_pair(result, currentPosition);
-
+		depth --;
 		if(result == false){
 			recoil(previousPosition);
 		}
@@ -1285,7 +1309,7 @@ public:
 		auto result = currentToken;
 		if(match(what)){
 	//		auto res = new Node(result);
-	//		cout << "Node text: " << res->text << "\n\n";
+	//		log << "Node text: " << res->text << "\n\n";
 			return new Node(result);
 		}
 		else {
@@ -1296,7 +1320,7 @@ public:
 
 	Node* get(Node::NodeType what, bool ignore = false){
 				int previousPosition = currentPosition;
-				cout << previousPosition << "(prev pos)";
+				log << previousPosition << "(prev pos)";
 				Node *result = new Node(what);
 				switch(what){
 				case Node::VALUE: {				
@@ -1360,7 +1384,7 @@ public:
 													return result;
 												}
 												else recoil(previousPosition);
-//												cout << "!!!!!!!!!!!!!!!!FAILED INT\n";
+//												log << "!!!!!!!!!!!!!!!!FAILED INT\n";
 												if(match(Token::FLOAT)){
 													recoil(previousPosition);
 													result->children.push_back(get(Token::FLOAT));
@@ -1414,8 +1438,9 @@ public:
 
 												if (match(Node::VALUE)) {
 													recoil(previousPosition);
-													result->children.push_back(get(Node::VALUE));
-													return result;
+												//	result->children.push_back(get(Node::VALUE));
+												//	return result;
+													return get(Node::VALUE);
 												}
 												else recoil(previousPosition);
 											
@@ -1438,8 +1463,9 @@ public:
 
 												if(match(Node::EXPR6)){
 													recoil(previousPosition);
-													result->children.push_back(get(Node::EXPR6));
-													return result;
+												//	result->children.push_back(get(Node::EXPR6));
+												//	return result;
+													return get(Node::EXPR6);
 												}
 												else recoil(previousPosition);
 											} break;	
@@ -1493,9 +1519,9 @@ public:
 												if(match(Node::EXPR5)){
 													recoil(previousPosition);
 
-													result->children.push_back(get(Node::EXPR5));
-
-													return result;	
+													//result->children.push_back(get(Node::EXPR5));
+													//return result;	
+													return get(Node::EXPR5);
 												}
 												else recoil(previousPosition);
 
@@ -1549,8 +1575,9 @@ public:
 
 												if(match(Node::EXPR4)){
 													recoil(previousPosition);
-													result->children.push_back(get(Node::EXPR4));
-													return result;
+												//	result->children.push_back(get(Node::EXPR4));
+												//	return result;
+													return get(Node::EXPR4);
 												}
 												else recoil(previousPosition);
 											} break;	
@@ -1586,8 +1613,9 @@ public:
 
 												if(match(Node::EXPR3)){
 													recoil(previousPosition);
-													result->children.push_back(get(Node::EXPR3));
-													return result;
+												//	result->children.push_back(get(Node::EXPR3));
+												//	return result;
+													return get(Node::EXPR3);
 												}
 												else recoil(previousPosition);
 											} break;	
@@ -1624,8 +1652,9 @@ public:
 
 												if(match(Node::EXPR2)){
 													recoil(previousPosition);
-													result->children.push_back(get(Node::EXPR2));
-													return result;
+												//	result->children.push_back(get(Node::EXPR2));
+												//	return result;
+													return get(Node::EXPR2);
 												}
 												else recoil(previousPosition);
 											} break;	
@@ -1648,8 +1677,9 @@ public:
 
 												if(match(Node::EXPR1)){
 													recoil(previousPosition);
-													result->children.push_back(get(Node::EXPR1));
-													return result;
+												//	result->children.push_back(get(Node::EXPR1));
+												//	return result;
+													return get(Node::EXPR1);
 												}
 												else recoil(previousPosition);
 											} break;
@@ -1672,8 +1702,9 @@ public:
 
 												if(match(Node::B_AND)){
 													recoil(previousPosition);
-													result->children.push_back(get(Node::B_AND));
-													return result;
+													//result->children.push_back(get(Node::B_AND));
+													//return result;
+													return get(Node::B_AND);
 												}
 												else recoil(previousPosition);
 											} break;
@@ -1696,8 +1727,9 @@ public:
 
 												if(match(Node::B_XOR)){
 													recoil(previousPosition);
-													result->children.push_back(get(Node::B_XOR));
-													return result;
+													//result->children.push_back(get(Node::B_XOR));
+													//return result;
+													return get(Node::B_XOR);
 												}
 												else recoil(previousPosition);
 											} break;
@@ -1761,8 +1793,9 @@ public:
 
 												if(match(Node::B_OR)){
 													recoil(previousPosition);
-													result->children.push_back(get(Node::B_OR));
-													return result;
+													//result->children.push_back(get(Node::B_OR));
+													//return result;
+													return get(Node::B_OR);
 												}
 												else recoil(previousPosition);
 
@@ -1800,8 +1833,9 @@ public:
 
 										if(match(Node::COMPARISION)){
 													recoil(previousPosition);
-													result->children.push_back(get(Node::COMPARISION));
-													return result;
+												//	result->children.push_back(get(Node::COMPARISION));
+												//	return result;
+													return get(Node::COMPARISION);
 										}
 										else recoil(previousPosition);
 
@@ -1826,8 +1860,9 @@ public:
 
 												if(match(Node::IS_IN_EXPRESSION)){
 													recoil(previousPosition);
-													result->children.push_back(get(Node::IS_IN_EXPRESSION));
-													return result;
+													//result->children.push_back(get(Node::IS_IN_EXPRESSION));
+													//return result;
+													return get(Node::IS_IN_EXPRESSION);
 												}
 												else recoil(previousPosition);
 											} break;
@@ -1850,8 +1885,9 @@ public:
 
 												if(match(Node::L_AND)){
 													recoil(previousPosition);
-													result->children.push_back(get(Node::L_AND));
-													return result;
+													//result->children.push_back(get(Node::L_AND));
+													//return result;
+													return get(Node::L_AND);
 												}
 												else recoil(previousPosition);
 											} break;
@@ -2092,7 +2128,8 @@ public:
 
 										if(match(Node::NAME1)){
 												recoil(previousPosition);
-												return get(Node::NAME1);
+												result->children.push_back(get(Node::NAME1));
+												return result;
 										}
 										else recoil(previousPosition);
 
@@ -2106,8 +2143,9 @@ public:
 											if(match(Token::NAME)){
 								
 												recoil(previousPosition);											
-												result->children.push_back(get(Token::NAME));
-												return result;
+											//	result->children.push_back(get(Token::NAME));
+											//	return result;
+												return get(Token::NAME);
 											}
 											else recoil(previousPosition);
 
@@ -2210,7 +2248,7 @@ public:
 													recoil(previousPosition);
 													get(Token::BRACE_LEFT, ignore);
 													get(Token::BRACE_RIGHT, ignore);
-												//	cout << "All's right!\n\n";
+												//	log << "All's right!\n\n";
 													return result;
 									}
 									else recoil(previousPosition);
@@ -2989,18 +3027,20 @@ public:
 
 				default: throw RecognitionException ("Some trash (" +currentToken.typeToText() + currentToken.getText() + ")on position " + currentToken.position.toString());
 			}
-			//cout << "this has " << result->children.size() <<'\n';
+			//log << "this has " << result->children.size() <<'\n';
 			auto shift = " ";
-	//		cout << shift << "( " << result->typeToText() << ", text" << result->text << ", children num = "<< result->children.size() << ":\n";
-	//		cout << shift << "( " << result->children[0]->typeToText() << ", text" << result->children[0]->text << ", children num = "<< result->children[0]->children.size() << ":\n";
-	//		cout << shift << ")\n";	
-	//		cout << shift << ")\n";
+	//		log << shift << "( " << result->typeToText() << ", text" << result->text << ", children num = "<< result->children.size() << ":\n";
+	//		log << shift << "( " << result->children[0]->typeToText() << ", text" << result->children[0]->text << ", children num = "<< result->children[0]->children.size() << ":\n";
+	//		log << shift << ")\n";	
+	//		log << shift << ")\n";
 			return result;
 		
 	}
 
 
 	Parser(const vector<Token> &input){
+		logDepth = true;
+		depth = 0;
 		this->input = input;
 		this->currentPosition = 0;
 		this->currentToken = Token(Token::BEGIN);
@@ -3009,20 +3049,21 @@ public:
 
 	void buildTree(){
 
-		cout << "PARSING AND VERIFYING \n\n==========\n\n";
+		log << "PARSING AND VERIFYING \n\n==========\n\n";
 		match(Token::BEGIN);
 
 		match(Node::OPERATORS);
 	//	match(Node::VALUE);
 
-		cout << currentToken.text;
+		log << currentToken.text;
 		if(!match(Token::END)){
 			throw RecognitionException ("Here should be end of input! " + currentToken.position.toString());	
 		}
 
-		cout << "PROGRAM IS VALID \n*******************************\n";
+		log << "PROGRAM IS VALID \n*******************************\n";
 	//	dontConsume = true;
-		cout << "BUILDING TREE\n\n==========\n\n";
+		log << "BUILDING TREE\n\n==========\n\n";
+		logDepth = false;
 		recoil(0);
 		tree = new Node(Node::PROGRAM);
 		tree->children.push_back(get(Token::BEGIN));
@@ -3032,18 +3073,18 @@ public:
 
 	//	dfs(*tree.children[1]->children[0]);
 	//	dfs(*tree.children[0]);
-		cout << "BUILT TREE\n\n==========\n\n";
+		log << "BUILT TREE\n\n==========\n\n";
 //		dfs(tree);
 
 		
 	}
 
 void dfs (Node *node, string shift = ""){
-	cout << shift << "( " << node->typeToText() << ", text: " << node->text << ", children num = "<< node->children.size() << ":\n";
+	log << shift << "( " << node->typeToText() << ", text: " << node->text << ", children num = "<< node->children.size() << ":\n";
 		for(int i = 0; i < node->children.size(); ++i){
 			dfs(node->children[i], shift + ' ');
 		}
-	cout << shift << ")\n";
+	log << shift << ")\n";
 }
 };
 

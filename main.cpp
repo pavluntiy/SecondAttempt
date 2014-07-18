@@ -11,11 +11,21 @@
 ofstream treeOut;
 
 void dfs (Node *node, string shift = ""){
-	treeOut << shift << "( " << node->typeToText() << ", text: " << node->text << ", children num = "<< node->children.size() << ":\n";
+	treeOut << shift << "( " << node->typeToText();
+	if(node->text != ""){
+	 	treeOut<< " \"" << node->text << "\"";
+	}
+	if(node->children.size() > 0){
+	 	treeOut << ", children num = "<< node->children.size() << ":\n";
+	}
 		for(int i = 0; i < node->children.size(); ++i){
 			dfs(node->children[i], shift + ' ');
 		}
-	treeOut << shift << ")\n";
+	if(node->children.size() > 0){
+	 	treeOut << shift;
+	}
+	treeOut   << " )\n";
+	
 }
 void draw(Node *tree, string str){
 	treeOut.open(str);
