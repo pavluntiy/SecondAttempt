@@ -203,3 +203,7 @@ a = main();
 
 a[123];
 foo.qwe()[x + y ** 3 || a == v];
+
+do
+	foo();
+while(true);

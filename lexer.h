@@ -237,7 +237,6 @@ public:
 			consume();
 		}
 
-		//cout << currentChar << '\n';
 		return makeToken(Token::DIRECT, buffer, sourcePosition);
 	}
 
@@ -254,7 +253,7 @@ public:
 
 
 	void consume (){
-		//cout << "ololo!\n";
+
 		if (Alphabet::isNewline(currentChar)){
 			sourcePosition.line ++;
 			sourcePosition.linePosition = 1;
@@ -649,7 +648,7 @@ public:
 	Token getSymbolicTokens(){
 
 		switch (currentChar) {
-					//case '#' : match('#'); return getDirective();
+
 					case '(' : match('('); return makeToken(Token::BRACE_LEFT);
 					case ')' : match(')'); return makeToken(Token::BRACE_RIGHT);
 					case '[' : match('['); return makeToken(Token::BRACKET_LEFT);
@@ -663,8 +662,6 @@ public:
 
 			        case EOF: return Token (Token::END, "");
 
-			        //case '\'': match ('\''); return getChar();
-			        //case '\"': match ('\"'); return getString();
 
 			        case '.' : match('.'); return getDotVariants();
 					case ':' : match(':'); return getColonVariants();
@@ -751,7 +748,7 @@ public:
 			}
 		}
 		while (currentToken != Token(Token::END, ""));
-		//std::cout << "kk";
+
 		output.push_back(currentToken);
 	}
 

@@ -29,12 +29,13 @@
 	+			init<operator> while(<expression>) <operator> finally <operator> else <operator>
 	+			while(<expression>) <operator> finally <operator> else <operator>
 
-	+			do <operator> while(<expression>)
+	+			do <operator> while(<expression>);
 //	+			do <operator> while(<expression>) else <operator>
 
 	+			switch (<expression>){<cases>}
 	+			switch(<expression>){<cases>} else<operator>
 				return <expression>;
+				return;
 
 +<cases> ::= 
 +			<case><cases>
@@ -203,7 +204,7 @@
 
 <comparision> ::=
 				<b_or>
-				<b_or> {>=, ==, <=, != } <b_or>
+				<b_or> {>=, ==, <=, !=, >, < } <b_or>
 
 
 

@@ -45,12 +45,9 @@ int main (){
 		input += in.get(); 
 	}
 
-
-	//Lexer lexer(input); 
 	Preprocessor pr(input);
 	try{
 		pr.preprocess();
-	//	lexer.tokenize();
 	}
 	catch (PreprocessorException pe){
 		cout << pe.what()<< "\n";
@@ -84,7 +81,7 @@ int main (){
 		cout << "Process terminated\n";
 		return 0;
 	} 
-//	cout << "asdfasdfasdfasd\n";
+
 	draw(parser.tree, "tree.out");
 	return 0;
 }

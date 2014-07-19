@@ -1,7 +1,6 @@
 #ifndef PREPROC_H
 #define PREPROC_H
 #include "preprocexception.h"
-//#include "log.h"
 #include <fstream>
 #include <iostream>
 #include <sstream>
@@ -57,7 +56,7 @@ public:
 
 	map<string, Macro> macroes;
 
-//	Log 
+
 
 	Preprocessor (string input){
 		this->ignore =  false;
@@ -170,9 +169,9 @@ public:
 		while(ss >> cur){
 				args.push_back(cur);
 			}
-	//	cout << cur;
+
 		if(name == "include" && !ignore){
-	//		cout << "ololo!";
+
 			for(auto cf: args){
 				if(!includedFiles.count(cf)){
 					includedFiles.insert(cf);
@@ -612,8 +611,6 @@ public:
 			consumeWithoutCopy();
 		}
 
-	//	cout << "success\n";
-	//	return result;
 
 
 
@@ -624,7 +621,7 @@ public:
 
 		
 
-		//	consumeWithoutCopy();
+
 
 		string buffer = "";
 
@@ -646,9 +643,7 @@ public:
 				consumeWithoutCopy();
 			}
 
-			//cout << "success\n";
-			//cout << currentChar;
-		//	cout << buffer;
+
 
 			if(buffer != "")
 				result.push_back(buffer);
@@ -657,9 +652,7 @@ public:
 
 		consumeWithoutCopy();
 
-	// /	cout << "success\n";
 
-	//	cout << "AD" << macro.argNum;
 		if(result.size() != macro.argNum){
 			throw PreprocessorException("Wrong number of arguments in macro substitution \'" + macro.name + "\' on " + sourcePosition.toString());
 		}
@@ -672,7 +665,7 @@ public:
 
 
 		auto arglist = getMacroArgs(macro);
-		//return "asdf";
+
 		string result = "", buffer = "";
 
 		for(int i = 0; i < macro.body.size(); ++i){
@@ -686,7 +679,6 @@ public:
 
 				int curArg = stoi(buffer);
 
-				//cout << curArg << '\n';
 
 				if(curArg >= macro.argNum){
 					throw PreprocessorException("Wrong number of argument in definition of macro \'" + macro.name + "\'");
@@ -695,13 +687,13 @@ public:
 				result += arglist[curArg];
 				buffer = "";
 			}
-		//	else {
+
 				result += macro.body[i];
 				
-		//	}
+
 		}
 
-		//cout << result;
+
 		return result;
 
 	}
@@ -712,8 +704,7 @@ public:
 			getWithoutCopy(macro.name);
 
 			this->output += setArgs(macro);
-	//		skip(macro.name.size());
-	//		return true;
+
 		}
 		return false;
 
@@ -748,7 +739,7 @@ public:
 			}
 
 			for(auto it: macroes){
-				//cout << "asdfsadf";
+
 				if(applyMacro(it.second)){
 					sust = true;
 				}

@@ -10,14 +10,14 @@
 #include <fstream>
 
 #include "node.h"
-//#include "tree.h"
+
 
 const bool ignore = true;
 
 ofstream log("log.out");
 class Parser {
 public:
-	//bool dontConsume = false;
+
 	int depth;
 	bool logDepth;
 	vector<Token> input;
@@ -27,8 +27,12 @@ public:
 	map<pair<Node::NodeType, int>, pair<bool, int> > memo;
 
 	void recoil(int previousPosition = 0){
-		log << "\t=>Recoiled from " << currentPosition << " to " << previousPosition << ", current token = ";
-		currentPosition = previousPosition;
+		log << "\t=>Recoiled from " << currentPosition << " to " << previousPosition << ", current token = ";		
+		if(previousPosition >= 0 && previousPosition < input.size()){
+			currentPosition = previousPosition;
+		}
+
+
 		currentToken = input[currentPosition];
 		log << currentToken.typeToText() << "\n";
 	}
@@ -41,6 +45,7 @@ public:
 		if(currentPosition < input.size())
 				currentToken = input[currentPosition];
 			else{
+				currentPosition--;
 				currentToken = Token(Token::END);
 			}
 		while(currentToken == Token(Token::BEGIN) ||
@@ -50,58 +55,60 @@ public:
 			if(currentPosition < input.size())
 				currentToken = input[currentPosition];
 			else{
+				currentPosition--;
 				currentToken = Token(Token::END);
 			}
 		}
 	}
 
-	bool match(Token::Type type){
-			log << "Looking for " << Token(type).typeToText() << " on position "  << currentPosition;
-			depth++;
-			if(logDepth){
-				log <<" on depth = " << depth;
-			}
-			log << "\n";
-		if(type == currentToken.type){
-			log << "\t Found " << currentToken.typeToText()<< "\n";
-			consume();//dontConsume);
-			depth--;
-			return true;
-		}else {
-			if(type == Token::CURL_RIGHT || type == Token::BRACE_RIGHT){
-				log << "---!WARNING!---\n";
-				log << ("\t\tYou could have missed " + typeToText(type) + " on position " + currentToken.position.toString() + " (Token # " + std::to_string(currentPosition) +")");
-			}
-			depth--;
-			log << "\t Failed to find " << Token(type).typeToText() << ", got " << currentToken.typeToText() << " on position "  << currentPosition << "\n";
-			return false;
-		}
+bool match(Token::Type type){
+	log << "Looking for " << Token(type).typeToText() << " on position " << currentPosition;
+	depth++;
+	if(logDepth){
+		log <<" on depth = " << depth;
 	}
-	bool match(Token token){
-		depth++;
-		log << "Looking for " << token.typeToText() << " \"" <<token.getText() << " \" on position "  << currentPosition;
-		if(logDepth){
-			log <<" on depth = " << depth;
-		}
-		log << "\n";
-		if(currentToken.type == token.type && currentToken.text == token.text){
-			log << "\t Found  "<< token.typeToText() << " \"" <<token.getText() << " \" on position "  << currentPosition << "\n";
-			consume();//dontConsume);
-			depth--;
-			return true;
-		}
-		
-
-		if(token.text == "" && currentToken.type == token.type){
-			depth--;
-			consume();//dontConsume);
-			return true;
-		}
-
+	log << "\n";
+	if(type == currentToken.type){
+		log << "\t Found " << currentToken.typeToText()<< "\n";
+		consume();
 		depth--;
-		log << "\t Failed to find "  << token.typeToText() << ", \"" << token.getText() << "\", got " << currentToken.typeToText() << ", \"" << currentToken.getText()<<  " \" on position "  << currentPosition << "\n";
+		return true;
+	}
+	else {
+		if(type == Token::CURL_RIGHT || type == Token::BRACE_RIGHT){
+			log << "---!WARNING!---\n";
+			log << ("\t\tYou could have missed " + typeToText(type) + " on position " + currentToken.position.toString() + " (Token # " + std::to_string(currentPosition) +")");
+		}
+		depth--;
+		log << "\t Failed to find " << Token(type).typeToText() << ", got " << currentToken.typeToText() << " on position " << currentPosition << "\n";
 		return false;
 	}
+}
+bool match(Token token){
+	depth++;
+	log << "Looking for " << token.typeToText() << " \"" <<token.getText() << " \" on position " << currentPosition;
+	if(logDepth){
+		log <<" on depth = " << depth;
+	}
+	log << "\n";
+	if(currentToken.type == token.type && currentToken.text == token.text){
+		log << "\t Found "<< token.typeToText() << " \"" <<token.getText() << " \" on position " << currentPosition << "\n";
+		consume();
+		depth--;
+		return true;
+	}
+
+
+	if(token.text == "" && currentToken.type == token.type){
+		depth--;
+		consume();
+		return true;
+	}
+
+	depth--;
+	log << "\t Failed to find " << token.typeToText() << ", \"" << token.getText() << "\", got " << currentToken.typeToText() << ", \"" << currentToken.getText()<< " \" on position " << currentPosition << "\n";
+	return false;
+}
 
 	bool match(Node::NodeType what){
 		depth++;
@@ -110,6 +117,10 @@ public:
 			log <<" on depth = " << depth;
 		}
 		log << "\n";
+
+		
+		
+		log.flush();
 		int previousPosition = currentPosition;
 		bool result = false;
 		if(memo.count(make_pair(what, currentPosition))){	
@@ -388,6 +399,18 @@ public:
 												}
 												else recoil(previousPosition);
 
+												if(match(Node::B_OR) && match(Token(Token::OPERATOR, ">")) && match(Node::B_OR)){
+													result = true;
+													break;
+												}
+												else recoil(previousPosition);
+
+												if(match(Node::B_OR) && match(Token(Token::OPERATOR, "<")) && match(Node::B_OR)){
+													result = true;
+													break;
+												}
+												else recoil(previousPosition);
+
 												if(match(Node::B_OR) && match(Token(Token::OPERATOR, ">=")) && match(Node::B_OR)){
 													result = true;
 													break;
@@ -468,85 +491,9 @@ public:
 											} break;
 
 
-/*					case Node::CONDITION: {										
-												if(match(Token(Token::OPERATOR, "!")) && match(Node::CONDITION)){
-													result = true;
-													break;
-												}
-												else recoil(previousPosition);
-
-												if(match(Node::IS_IN_EXPRESSION)){
-													result = true;
-													break;
-												}
-												else recoil(previousPosition);
-
-												if(match(Node::ATOMIC_CONDITION) && match(Token(Token::OPERATOR, "||")) && match(Node::CONDITION)){
-													result = true;
-													break;
-												}
-												else recoil(previousPosition);
-
-
-												if(match(Node::ATOMIC_CONDITION)){
-													result = true;
-													break;
-												}
-												else recoil(previousPosition);
-											} break;
-
-					case Node::ATOMIC_CONDITION: {		
-
-												if(match(Node::AND_COND)){
-													result = true;
-													break;
-												}
-												else recoil(previousPosition);
-												
-
-												if(match(Token::BRACE_LEFT) && match(Node::CONDITION) && match(Token::BRACE_RIGHT)){
-													result = true;
-													break;
-												}
-												else recoil(previousPosition);
-
-												if(match(Node::EXPR1)){
-
-													result = true;
-													break;
-												}
-												else recoil(previousPosition);
-
-
-											} break;
-
-					case Node::AND_COND: {
-												if(match(Node::COMPARISION) && match(Token(Token::OPERATOR, "&&")) && match(Node::AND_COND)){
-													result = true;
-													break;
-												}
-												else recoil(previousPosition);
-
-
-												if(match(Node::COMPARISION)){
-													result = true;
-													break;
-												}
-												else recoil(previousPosition);
-
-
-											
-
-					} break;
-*/
-
 
 					case Node::EXPRESSION: {			
-									//			if(match(Node::CONDITION)){
-									//				result = true;
-									//				break;
-									//			}
-									//			else recoil(previousPosition);
+							
 												if(match(Node::ASSIGNMENT)){
 													result = true;
 													break;
@@ -558,11 +505,7 @@ public:
 													break;
 												}
 												else recoil(previousPosition);
-									//			if(match(Node::FUNCALL)){
-									//				result = true;
-									//				break;
-									//			}
-									//			else recoil(previousPosition);
+									
 							
 												
 
@@ -633,12 +576,6 @@ public:
 												}
 												else recoil(previousPosition);
 
-//												if(match(Token::NAME) && match(Token(Token::OPERATOR, "=")) && match(Node::VALUE)){
-//													result = true;
-//													break;
-//												}
-//												else recoil(previousPosition);
-
 											} break;
 
 
@@ -646,11 +583,6 @@ public:
 
 					case Node::FUNCALL: {
 
-								//		if(match(Node::FUNCALL) && match(Node::ARGLIST)){
-								//					result = true;
-								//					break;
-								//		}
-								//		else recoil(previousPosition);
 
 										if(match(Node::NAME) && match(Node::ARGLIST)){
 													result = true;
@@ -743,17 +675,6 @@ public:
 													break;
 										}
 										else recoil(previousPosition);
-
-
-
-							//			if(true){
-							//					result = true;
-							//					break;
-							//			}
-							//			else recoil(previousPosition);
-
-
-
 
 
 									} break;		
@@ -1138,22 +1059,11 @@ public:
 									else recoil(previousPosition);
 
 
-/*								if(		match(Token(Token::KEYWORD, "do")) && match(Node::OPERATOR) &&
-										match(Token(Token::KEYWORD, "while")) && match(Token::BRACE_LEFT) &&
-										match(Node::EXPRESSION) &&
-								 		match(Token::BRACE_RIGHT) &&
-								 		match(Token(Token::KEYWORD, "else")) && match(Node::OPERATOR)
-
-								 ) {
-													result = true;
-													break;
-										}
-									else recoil(previousPosition);
-*/
 								if(		match(Token(Token::KEYWORD, "do")) && match(Node::OPERATOR) &&
 										match(Token(Token::KEYWORD, "while")) && match(Token::BRACE_LEFT) &&
 										match(Node::EXPRESSION) &&
-								 		match(Token::BRACE_RIGHT)
+								 		match(Token::BRACE_RIGHT) &&
+								 		match(Token::SEMICOLON)
 								 ) {
 													result = true;
 													break;
@@ -1198,6 +1108,16 @@ public:
 								if(	
 										match(Token(Token::KEYWORD, "return")) && 
 										match(Node::EXPRESSION) &&
+								 		match(Token::SEMICOLON)
+
+								 ) {
+													result = true;
+													break;
+										}
+								else recoil(previousPosition);
+
+								if(	
+										match(Token(Token::KEYWORD, "return")) && 
 								 		match(Token::SEMICOLON)
 
 								 ) {
@@ -1280,7 +1200,7 @@ public:
 						if(
 							match(Token(Token::KEYWORD, "case")) && match(Node::EXPRESSION) &&  
 							match(Token(Token::OPERATOR, ":")) &&
-							match(Node::OPERATOR) //No SEMICOLON here!
+							match(Node::OPERATOR) //#No SEMICOLON here!
 						){
 									result = true;
 									break;
@@ -1308,6 +1228,7 @@ public:
 		}
 		log << "\n";
 		memo[make_pair(what, previousPosition)] = make_pair(result, currentPosition);
+
 		depth --;
 		if(result == false){
 			recoil(previousPosition);
@@ -1340,8 +1261,6 @@ public:
 
 		auto result = currentToken;
 		if(match(what)){
-	//		auto res = new Node(result);
-	//		log << "Node text: " << res->text << "\n\n";
 			return new Node(result);
 		}
 		else {
@@ -1356,18 +1275,41 @@ public:
 				Node *result = new Node(what);
 				switch(what){
 				case Node::VALUE: {				
-							/*					if(match(Node::NAME) && match(Token::BRACKET_LEFT) && match(Node::EXPRESSION) && match(Token::BRACKET_RIGHT)){
-													result = true;
-													break;
+												if(match(Node::NAME) && match(Token::BRACKET_LEFT) && match(Node::EXPRESSION) && match(Token::BRACKET_RIGHT)){
+													recoil(previousPosition);
+
+													auto tmp = get(Node::NAME);
+													auto tmp1 = new Node(Token(Token::OPERATOR, "[]"));
+													tmp1->children.push_back(tmp);
+
+													get(Token::BRACKET_LEFT, ignore);
+													tmp1->children.push_back(get(Node::EXPRESSION));
+													get(Token::BRACKET_RIGHT, ignore);
+
+													result->children.push_back(tmp1);
+
+													return result;
+
 												}
 												else recoil(previousPosition);
 
 												if(match(Node::FUNCALL) && match(Token::BRACKET_LEFT) && match(Node::EXPRESSION) && match(Token::BRACKET_RIGHT)){
-													result = true;
-													break;
+													recoil(previousPosition);
+
+													auto tmp = get(Node::FUNCALL);
+													auto tmp1 = new Node(Token(Token::OPERATOR, "[]"));
+													tmp1->children.push_back(tmp);
+
+													get(Token::BRACKET_LEFT, ignore);
+													tmp1->children.push_back(get(Node::EXPRESSION));
+													get(Token::BRACKET_RIGHT, ignore);
+
+													result->children.push_back(tmp1);
+
+													return result;
 												}
 												else recoil(previousPosition);
-*/
+
 												if(match(Node::ARGLIST)){
 													recoil(previousPosition);
 													result->children.push_back(get(Node::ARGLIST));
@@ -1416,7 +1358,7 @@ public:
 													return result;
 												}
 												else recoil(previousPosition);
-//												log << "!!!!!!!!!!!!!!!!FAILED INT\n";
+
 												if(match(Token::FLOAT)){
 													recoil(previousPosition);
 													result->children.push_back(get(Token::FLOAT));
@@ -1470,8 +1412,8 @@ public:
 
 												if (match(Node::VALUE)) {
 													recoil(previousPosition);
-												//	result->children.push_back(get(Node::VALUE));
-												//	return result;
+												//#	result->children.push_back(get(Node::VALUE));
+												//#	return result;
 													return get(Node::VALUE);
 												}
 												else recoil(previousPosition);
@@ -1495,8 +1437,8 @@ public:
 
 												if(match(Node::EXPR6)){
 													recoil(previousPosition);
-												//	result->children.push_back(get(Node::EXPR6));
-												//	return result;
+												//#	result->children.push_back(get(Node::EXPR6));
+												//#	return result;
 													return get(Node::EXPR6);
 												}
 												else recoil(previousPosition);
@@ -1551,8 +1493,8 @@ public:
 												if(match(Node::EXPR5)){
 													recoil(previousPosition);
 
-													//result->children.push_back(get(Node::EXPR5));
-													//return result;	
+													//#result->children.push_back(get(Node::EXPR5));
+													//#return result;	
 													return get(Node::EXPR5);
 												}
 												else recoil(previousPosition);
@@ -1607,8 +1549,8 @@ public:
 
 												if(match(Node::EXPR4)){
 													recoil(previousPosition);
-												//	result->children.push_back(get(Node::EXPR4));
-												//	return result;
+												//#	result->children.push_back(get(Node::EXPR4));
+												//#	return result;
 													return get(Node::EXPR4);
 												}
 												else recoil(previousPosition);
@@ -1645,8 +1587,8 @@ public:
 
 												if(match(Node::EXPR3)){
 													recoil(previousPosition);
-												//	result->children.push_back(get(Node::EXPR3));
-												//	return result;
+												//#	result->children.push_back(get(Node::EXPR3));
+												//#	return result;
 													return get(Node::EXPR3);
 												}
 												else recoil(previousPosition);
@@ -1684,8 +1626,8 @@ public:
 
 												if(match(Node::EXPR2)){
 													recoil(previousPosition);
-												//	result->children.push_back(get(Node::EXPR2));
-												//	return result;
+												//#	result->children.push_back(get(Node::EXPR2));
+												//#	return result;
 													return get(Node::EXPR2);
 												}
 												else recoil(previousPosition);
@@ -1709,8 +1651,8 @@ public:
 
 												if(match(Node::EXPR1)){
 													recoil(previousPosition);
-												//	result->children.push_back(get(Node::EXPR1));
-												//	return result;
+												//#	result->children.push_back(get(Node::EXPR1));
+												//#	return result;
 													return get(Node::EXPR1);
 												}
 												else recoil(previousPosition);
@@ -1734,8 +1676,8 @@ public:
 
 												if(match(Node::B_AND)){
 													recoil(previousPosition);
-													//result->children.push_back(get(Node::B_AND));
-													//return result;
+													//#result->children.push_back(get(Node::B_AND));
+													//#return result;
 													return get(Node::B_AND);
 												}
 												else recoil(previousPosition);
@@ -1759,8 +1701,8 @@ public:
 
 												if(match(Node::B_XOR)){
 													recoil(previousPosition);
-													//result->children.push_back(get(Node::B_XOR));
-													//return result;
+													//#result->children.push_back(get(Node::B_XOR));
+													//#return result;
 													return get(Node::B_XOR);
 												}
 												else recoil(previousPosition);
@@ -1772,6 +1714,34 @@ public:
 													auto tmp = get(Node::B_OR);
 
 													auto root = get(Token(Token::OPERATOR, "=="));
+													root->children.push_back(tmp);
+																										
+													root->children.push_back(get(Node::B_OR));
+													result->children.push_back(root);
+
+													return result;
+												}
+												else recoil(previousPosition);
+
+												if(match(Node::B_OR) && match(Token(Token::OPERATOR, ">")) && match(Node::B_OR)){
+													recoil(previousPosition);
+													auto tmp = get(Node::B_OR);
+
+													auto root = get(Token(Token::OPERATOR, ">"));
+													root->children.push_back(tmp);
+																										
+													root->children.push_back(get(Node::B_OR));
+													result->children.push_back(root);
+
+													return result;
+												}
+												else recoil(previousPosition);
+
+												if(match(Node::B_OR) && match(Token(Token::OPERATOR, "<")) && match(Node::B_OR)){
+													recoil(previousPosition);
+													auto tmp = get(Node::B_OR);
+
+													auto root = get(Token(Token::OPERATOR, "<"));
 													root->children.push_back(tmp);
 																										
 													root->children.push_back(get(Node::B_OR));
@@ -1825,8 +1795,8 @@ public:
 
 												if(match(Node::B_OR)){
 													recoil(previousPosition);
-													//result->children.push_back(get(Node::B_OR));
-													//return result;
+													//#result->children.push_back(get(Node::B_OR));
+													//#return result;
 													return get(Node::B_OR);
 												}
 												else recoil(previousPosition);
@@ -1865,8 +1835,8 @@ public:
 
 										if(match(Node::COMPARISION)){
 													recoil(previousPosition);
-												//	result->children.push_back(get(Node::COMPARISION));
-												//	return result;
+												//#	result->children.push_back(get(Node::COMPARISION));
+												//#	return result;
 													return get(Node::COMPARISION);
 										}
 										else recoil(previousPosition);
@@ -1892,8 +1862,8 @@ public:
 
 												if(match(Node::IS_IN_EXPRESSION)){
 													recoil(previousPosition);
-													//result->children.push_back(get(Node::IS_IN_EXPRESSION));
-													//return result;
+													//#result->children.push_back(get(Node::IS_IN_EXPRESSION));
+													//#return result;
 													return get(Node::IS_IN_EXPRESSION);
 												}
 												else recoil(previousPosition);
@@ -1917,8 +1887,8 @@ public:
 
 												if(match(Node::L_AND)){
 													recoil(previousPosition);
-													//result->children.push_back(get(Node::L_AND));
-													//return result;
+													//#result->children.push_back(get(Node::L_AND));
+													//#return result;
 													return get(Node::L_AND);
 												}
 												else recoil(previousPosition);
@@ -2175,8 +2145,8 @@ public:
 											if(match(Token::NAME)){
 								
 												recoil(previousPosition);											
-											//	result->children.push_back(get(Token::NAME));
-											//	return result;
+											//#	result->children.push_back(get(Token::NAME));
+											//#	return result;
 												return get(Token::NAME);
 											}
 											else recoil(previousPosition);
@@ -2211,7 +2181,7 @@ public:
 													recoil(previousPosition);
 													auto tmp = get(Node::LIST_ELEM);
 													get(Token::COMMA, ignore);
-													result->children = get(Node::LIST)->children; //!!!!It is not a mistake!
+													result->children = get(Node::LIST)->children; //#!!!!It is not a mistake!
 													result->children.insert(result->children.begin(), tmp);
 													return result;
 													
@@ -2280,7 +2250,7 @@ public:
 													recoil(previousPosition);
 													get(Token::BRACE_LEFT, ignore);
 													get(Token::BRACE_RIGHT, ignore);
-												//	log << "All's right!\n\n";
+
 													return result;
 									}
 									else recoil(previousPosition);
@@ -2289,7 +2259,7 @@ public:
 
 				
 									
-					case Node::OPERATOR: { //OPTIMIZE NONE OF THESE!
+					case Node::OPERATOR: { //# OPTIMIZE NONE OF THESE!
 										if(match(Node::SPECIAL)){
 													recoil(previousPosition);
 													result->children.push_back(get(Node::SPECIAL));
@@ -2342,7 +2312,7 @@ public:
 										if(match(Node::OPERATOR) &&  match(Node::OPERATORS)){
 													recoil(previousPosition);
 													auto tmp = get(Node::OPERATOR);
-													result->children = get(Node::OPERATORS)->children; //!!!!It is not a mistake!
+													result->children = get(Node::OPERATORS)->children; //# !!!!It is not a mistake!
 													result->children.insert(result->children.begin(), tmp);
 													return result;											
 										}
@@ -2389,7 +2359,7 @@ public:
 													recoil(previousPosition);
 													auto tmp = get(Node::ASSIGNMENT);
 													get(Token::COMMA, ignore);
-													result->children = get(Node::VARLIST)->children; //!!!!It is not a mistake!
+													result->children = get(Node::VARLIST)->children; //# !!!!It is not a mistake!
 													result->children.insert(result->children.begin(), tmp);
 													return result;
 										}
@@ -2408,7 +2378,7 @@ public:
 													recoil(previousPosition);
 													auto tmp = get(Node::NAME);
 													get(Token::COMMA, ignore);
-													result->children = get(Node::VARLIST)->children; //!!!!It is not a mistake!
+													result->children = get(Node::VARLIST)->children; //# !!!!It is not a mistake!
 													result->children.insert(result->children.begin(), tmp);
 													return result;
 										}
@@ -2427,7 +2397,7 @@ public:
 									} break;			
 
 
-				case Node::TYPE: { //DO NOT OPTIMIZE THIS!
+				case Node::TYPE: { //# DO NOT OPTIMIZE THIS!
 										if(match(Node::NAME)) {
 											recoil(previousPosition);
 												result->children.push_back(get(Node::NAME));
@@ -2458,7 +2428,7 @@ public:
 													recoil(previousPosition);
 													auto tmp = get(Node::DECL_ATOM);
 													get(Token::COMMA, ignore);
-													result->children = get(Node::DECL_LIST)->children; //!!!!It is not a mistake!
+													result->children = get(Node::DECL_LIST)->children; //# !!!!It is not a mistake!
 													result->children.insert(result->children.begin(), tmp);
 													return result;
 										}
@@ -2547,7 +2517,7 @@ public:
 												get(Token::BRACE_RIGHT, ignore);
 												tmp->children.push_back(get(Node::OPERATOR));
 												result->children.push_back(tmp);
-											//	return result;
+											//#	return result;
 												return tmp;
 
 										}
@@ -2575,7 +2545,7 @@ public:
 												get(Token::BRACE_RIGHT, ignore);
 												tmp->children.push_back(get(Node::OPERATOR));
 												result->children.push_back(tmp);
-											//	return result;
+											//#	return result;
 												return tmp;
 
 
@@ -2602,7 +2572,7 @@ public:
 												get(Token(Token::KEYWORD, "else"), ignore);
 												tmp->children.push_back(get(Node::OPERATOR));
 												result->children.push_back(tmp);
-											//	return result;
+											//#	return result;
 												return tmp;
 										}
 									else recoil(previousPosition);
@@ -2624,7 +2594,7 @@ public:
 
 
 												result->children.push_back(tmp);
-										//		return result;
+										//#		return result;
 												return tmp;
 										}
 
@@ -2663,7 +2633,7 @@ public:
 												tmp->children.push_back(do_part);
 												tmp->children.push_back(finally_part);
 												result->children.push_back(tmp);
-											//	return result;
+											//#	return result;
 												return tmp;
 										}
 									else recoil(previousPosition);
@@ -2688,7 +2658,7 @@ public:
 
 												auto do_part = get(Node::OPERATOR);
 
-											//	get(Token(Token::KEYWORD, "finally"), ignore);
+											//#	get(Token(Token::KEYWORD, "finally"), ignore);
 
 												auto finally_part = new Node();
 
@@ -2701,7 +2671,7 @@ public:
 												tmp->children.push_back(do_part);
 												tmp->children.push_back(finally_part);
 												result->children.push_back(tmp);
-											//	return result;
+											//#	return result;
 												return tmp;
 										}
 									else recoil(previousPosition);
@@ -2729,7 +2699,7 @@ public:
 
 												auto finally_part = get(Node::OPERATOR);
 
-											//	get(Token(Token::KEYWORD, "else"), ignore);
+											//#	get(Token(Token::KEYWORD, "else"), ignore);
 
 												auto else_part = new Node();
 
@@ -2738,7 +2708,7 @@ public:
 												tmp->children.push_back(do_part);
 												tmp->children.push_back(finally_part);
 												result->children.push_back(tmp);
-												//return result;
+												//#return result;
 												return tmp;
 										}
 									else recoil(previousPosition);
@@ -2762,11 +2732,11 @@ public:
 
 												auto do_part = get(Node::OPERATOR);
 
-											//	get(Token(Token::KEYWORD, "finally"), ignore);
+											//#	get(Token(Token::KEYWORD, "finally"), ignore);
 
 												auto finally_part = new Node();
 
-											//	get(Token(Token::KEYWORD, "else"), ignore);
+											//#	get(Token(Token::KEYWORD, "else"), ignore);
 
 												auto else_part = new Node();
 
@@ -2775,7 +2745,7 @@ public:
 												tmp->children.push_back(do_part);
 												tmp->children.push_back(finally_part);
 												result->children.push_back(tmp);
-												//return result;
+												//#return result;
 												return tmp;
 										}
 									else recoil(previousPosition);
@@ -2818,7 +2788,7 @@ public:
 												tmp->children.push_back(do_part);
 												tmp->children.push_back(finally_part);
 												result->children.push_back(tmp);
-												//return result;
+												//#return result;
 												return tmp;
 										}
 									else recoil(previousPosition);
@@ -2848,7 +2818,7 @@ public:
 
 												auto do_part = get(Node::OPERATOR);
 
-										//		get(Token(Token::KEYWORD, "finally"), ignore);
+										//#		get(Token(Token::KEYWORD, "finally"), ignore);
 
 												auto finally_part = new Node();
 
@@ -2861,7 +2831,7 @@ public:
 												tmp->children.push_back(do_part);
 												tmp->children.push_back(finally_part);
 												result->children.push_back(tmp);
-												//return result;
+												//#return result;
 												return tmp;
 										}
 									else recoil(previousPosition);
@@ -2894,7 +2864,7 @@ public:
 
 												auto finally_part = get(Node::OPERATOR);
 
-											//	get(Token(Token::KEYWORD, "else"), ignore);
+											//#	get(Token(Token::KEYWORD, "else"), ignore);
 
 												auto else_part = new Node();
 
@@ -2903,7 +2873,7 @@ public:
 												tmp->children.push_back(do_part);
 												tmp->children.push_back(finally_part);
 												result->children.push_back(tmp);
-												//return result;
+												//#return result;
 												return tmp;
 										}
 									else recoil(previousPosition);
@@ -2945,38 +2915,18 @@ public:
 												tmp->children.push_back(do_part);
 												tmp->children.push_back(finally_part);
 												result->children.push_back(tmp);
-												//return result;
+												//#return result;
 												return tmp;
 										}
 									else recoil(previousPosition);
 
 
-				/*				if(		match(Token(Token::KEYWORD, "do")) && match(Node::OPERATOR) &&
-										match(Token(Token::KEYWORD, "while")) && match(Token::BRACE_LEFT) &&
-										match(Node::EXPRESSION) &&
-								 		match(Token::BRACE_RIGHT) &&
-								 		match(Token(Token::KEYWORD, "else")) && match(Node::OPERATOR)
 
-								 ) {
-													recoil(previousPosition);
-													auto tmp = get(Token(Token::KEYWORD, "do"));
-													tmp->children.push_back(get(Node::OPERATOR));
-													get(Token(Token::KEYWORD, "while"), ignore);
-													get(Token::BRACE_LEFT, ignore);
-
-													tmp->children.push_back(Node::EXPRESSION);
-
-													get(Token::BRACE_RIGHT, ignore);
-
-
-
-										}
-									else recoil(previousPosition);
-*/
 								if(		match(Token(Token::KEYWORD, "do")) && match(Node::OPERATOR) &&
 										match(Token(Token::KEYWORD, "while")) && match(Token::BRACE_LEFT) &&
 										match(Node::EXPRESSION) &&
-								 		match(Token::BRACE_RIGHT)
+								 		match(Token::BRACE_RIGHT) &&
+								 		match(Token::SEMICOLON)
 								 ) {
 													recoil(previousPosition);
 													auto tmp = get(Token(Token::KEYWORD, "do"));
@@ -2988,9 +2938,9 @@ public:
 													tmp->children.push_back(get(Node::EXPRESSION));
 
 													get(Token::BRACE_RIGHT, ignore);
-
+													get(Token::SEMICOLON, ignore);
 													result->children.push_back(tmp);
-													//return result;
+													//#return result;
 													return tmp;
 										}
 									else recoil(previousPosition);
@@ -3086,7 +3036,8 @@ public:
 										match(Node::EXPRESSION) &&
 								 		match(Token::SEMICOLON)
 
-								 ) {
+								 ) {		
+								 			recoil(previousPosition);
 											auto tmp = get(Token(Token::KEYWORD, "return"));
 											tmp->type = Node::SPECIAL;
 
@@ -3097,12 +3048,27 @@ public:
 										}
 								else recoil(previousPosition);
 
+
+								if(	
+										match(Token(Token::KEYWORD, "return")) && 
+								 		match(Token::SEMICOLON)
+
+								 ) {		
+								 			recoil(previousPosition);
+											auto tmp = get(Token(Token::KEYWORD, "return"));
+											tmp->type = Node::SPECIAL;
+											tmp->children.push_back(new Node());
+											get(Token::SEMICOLON, ignore);
+											return tmp;		
+										}
+								else recoil(previousPosition);
+
 								if(	
 										match(Token(Token::KEYWORD, "break")) && 
 										match(Node::NAME1) &&
 								 		match(Token::SEMICOLON)
 
-								 ) {
+								 ) {		recoil(previousPosition);
 											auto tmp = get(Token(Token::KEYWORD, "break"));
 											tmp->type = Node::SPECIAL;
 
@@ -3117,7 +3083,8 @@ public:
 										match(Token(Token::KEYWORD, "break")) && 
 								 		match(Token::SEMICOLON)
 
-								 ) {
+								 ) {	
+								 			recoil(previousPosition);
 											auto tmp = get(Token(Token::KEYWORD, "break"));
 											tmp->type = Node::SPECIAL;
 
@@ -3134,6 +3101,7 @@ public:
 								 		match(Token::SEMICOLON)
 
 								 ) {
+								 			recoil(previousPosition);
 											auto tmp = get(Token(Token::KEYWORD, "goto"));
 											tmp->type = Node::SPECIAL;
 
@@ -3154,7 +3122,7 @@ public:
 													recoil(previousPosition);
 													auto tmp = get(Node::CASE);
 
-													result->children = get(Node::CASES)->children; //!!!!It is not a mistake!
+													result->children = get(Node::CASES)->children; //#!!!!It is not a mistake!
 													result->children.insert(result->children.begin(), tmp);
 													return result;
 										}
@@ -3203,7 +3171,7 @@ public:
 						if(
 							match(Token(Token::KEYWORD, "case")) && match(Node::EXPRESSION) && 
 							match(Token(Token::OPERATOR, ":")) &&
-							match(Node::OPERATOR) //No SEMICOLON HERE!
+							match(Node::OPERATOR) //#No SEMICOLON HERE!
 						){
 							recoil(previousPosition);
 
@@ -3228,12 +3196,6 @@ public:
 
 				default: throw RecognitionException ("Some trash (" +currentToken.typeToText() + currentToken.getText() + ")on position " + currentToken.position.toString());
 			}
-			//log << "this has " << result->children.size() <<'\n';
-			auto shift = " ";
-	//		log << shift << "( " << result->typeToText() << ", text" << result->text << ", children num = "<< result->children.size() << ":\n";
-	//		log << shift << "( " << result->children[0]->typeToText() << ", text" << result->children[0]->text << ", children num = "<< result->children[0]->children.size() << ":\n";
-	//		log << shift << ")\n";	
-	//		log << shift << ")\n";
 			return result;
 		
 	}
@@ -3254,39 +3216,31 @@ public:
 		match(Token::BEGIN);
 
 		match(Node::OPERATORS);
-	//	match(Node::VALUE);
 
-		log << currentToken.text;
 		if(!match(Token::END)){
 			throw RecognitionException ("Here should be end of input! " + currentToken.position.toString());	
 		}
 
 		log << "PROGRAM IS VALID \n*******************************\n";
-	//	dontConsume = true;
+
+		log.flush();
+
 		log << "BUILDING TREE\n\n==========\n\n";
 		logDepth = false;
 		recoil(0);
 		tree = new Node(Node::PROGRAM);
 		tree->children.push_back(get(Token::BEGIN));
 		tree->children.push_back( get(Node::OPERATORS));
-//			tree.children[1]->children.push_back(new Node());
 		tree->children.push_back(get(Token::END));
 
-	//	dfs(*tree.children[1]->children[0]);
-	//	dfs(*tree.children[0]);
+
 		log << "BUILT TREE\n\n==========\n\n";
-//		dfs(tree);
+
 
 		
 	}
 
-void dfs (Node *node, string shift = ""){
-	log << shift << "( " << node->typeToText() << ", text: " << node->text << ", children num = "<< node->children.size() << ":\n";
-		for(int i = 0; i < node->children.size(); ++i){
-			dfs(node->children[i], shift + ' ');
-		}
-	log << shift << ")\n";
-}
+
 };
 
 

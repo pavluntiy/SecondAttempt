@@ -80,11 +80,6 @@ public:
 	vector<Node*> children;
 	Position position;
 
-//	Node (NodeType type, const vector<Node*> &children){
-//		this->type = type;
-//		this->children = children;
-//		this->text = "";
-//	}
 
 	NodeType convert(Token::Type type){
 		switch (type){
@@ -116,15 +111,11 @@ public:
 		}
 	}
 
-//	Node(const Token::Type type){
-//		this->type = convert(token.type);
-//		this->text = token.text;
-//	}
+
 
 	Node(const Token &token){
 		this->type = convert(token.type);
 		this->text = token.text;
-		cout << this->text << token.text;
 	}
 
 	Node (NodeType type = NONE){
