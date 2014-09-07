@@ -46,6 +46,10 @@ public:
 		EXPR4, 
 		EXPR5,
 		EXPR6,
+		EXPR7,
+		EXPR8,
+		BRACED,
+		ACCESS,
 		L_OR,
 		L_AND,
 		B_OR,
@@ -164,6 +168,10 @@ public:
 			case EXPR4: 		return "EXPR4";
 			case EXPR5:			return "EXPR5";
 			case EXPR6:			return "EXPR6";
+			case EXPR7:			return "EXPR7";
+			case EXPR8:			return "EXPR8";
+			case BRACED:		return "BRACED";
+			case ACCESS:		return "ACCESS";
 
 			case L_OR:			return "L_OR";
 			case L_AND:			return "L_AND";

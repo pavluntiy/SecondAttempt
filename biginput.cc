@@ -202,8 +202,11 @@ a = main();
 0x00000._123_234_234__234;
 
 a[123];
+a[123 + foo("asdf", "qu", "sdf")];
 foo.qwe()[x + y ** 3 || a == v];
 
 do
 	foo();
 while(true);
+foo[10]()[10][!100]->foo().foo[11][11].foo;
+

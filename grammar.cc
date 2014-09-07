@@ -81,7 +81,7 @@
 
 
 
-+<funcall> ::=
+TO_DELETE: +<funcall> ::=
 				//<funcall><arglist>
 				+<name><arglist>
 
@@ -127,22 +127,22 @@
 +<digit> :: = DIGIGIT
 
 +<value> ::= 
-			<name>[<expression>]
-			<funcall>[<expression>]
+TO_DELETE: 			<name>[<expression>]
+TO_DELETE: 			<funcall>[<expression>]
 			+<name>
 			+<constant>
-			+<funcall>
-			+<funcall>.<value>
-			+<funcall>-><value>
+TO_DELETE: 			+<funcall>
+TO_DELETE: 			+<funcall>.<value>
+TO_DELETE: 			+<funcall>-><value>
 			+<list>
 
 
 +<name> :: =	
 			<namespace>::<name>
-			*<name1>
-			<name1>			
-			<name1> -> <name>
-			<name1>.<name>
+TO_DELETE: 			*<name1>
+TO_DELETE: 			<name1>			
+TO_DELETE: 			<name1> -> <name>
+TO_DELETE: 			<name1>.<name>
 
 <assignment> ::= 
 	+<name> = <expression>
@@ -244,11 +244,31 @@
 
 <expr5> ::= 
 			<expr6> ** <expr6>
-<expr6> ::= 
+
+
+<expr6> ::= 	
+				
+				
+				<expr7> -> <expr6>
+	 			<expr7> . <expr6>
+	 			*<expr7>
+	 			<expr7>
+
+<expr7> ::=
+ 			<expr8> <braced>
+ 			<expr8>
+<expr8> ::= 
 			(<expression>)
 			<value>
 
-		
+<braced> ::= 
+		<arglist> <braced>
+		<access> <braced>
+		<arglist>
+		<access>
+
+<access> ::=
+				[<expression>]
 
 
 <declaration> ::=

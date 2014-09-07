@@ -11,6 +11,10 @@
 
 #include "node.h"
 
+/*
+	I believe that 'recoil()' after each clause is necessary, because 'match()' consumes tokens.
+*/
+
 
 const bool ignore = true;
 
@@ -136,8 +140,9 @@ bool match(Token token){
 		}
 		else{
 			switch(what){
+/*CHANGED*/
 				case Node::VALUE: {				
-												if(match(Node::NAME) && match(Token::BRACKET_LEFT) && match(Node::EXPRESSION) && match(Token::BRACKET_RIGHT)){
+									/*			if(match(Node::NAME) && match(Token::BRACKET_LEFT) && match(Node::EXPRESSION) && match(Token::BRACKET_RIGHT)){
 													result = true;
 													break;
 												}
@@ -149,19 +154,19 @@ bool match(Token token){
 												}
 												else recoil(previousPosition);
 
-												if(match(Node::ARGLIST)){
+									*/			if(match(Node::ARGLIST)){
 													result = true;
 													break;
 												}
 												else recoil(previousPosition);
 
-												if(match(Node::FUNCALL) && match(Token::DOT) && match(Node::VALUE)){
+									/*			if(match(Node::FUNCALL) && match(Token::DOT) && match(Node::VALUE)){
 													result = true;
 													break;
 												}
 												else recoil(previousPosition);
-
-												if(match(Node::FUNCALL) && match(Token(Token::OPERATOR, "->")) && match(Node::VALUE)){
+									*/
+									/*			if(match(Node::FUNCALL) && match(Token(Token::OPERATOR, "->")) && match(Node::VALUE)){
 													result = true;
 													break;
 												}
@@ -172,7 +177,7 @@ bool match(Token token){
 													break;
 												}
 												else recoil(previousPosition);
-
+									*/
 												if(match(Token::INT)){
 													result = true;
 													break;
@@ -213,7 +218,43 @@ bool match(Token token){
 												
 											} break;
 
-				case Node::EXPR6: 			{
+/*CHANGED*/
+				case Node::BRACED: 			{
+												if(match(Node::ARGLIST) && match(Node::BRACED)){
+													result = true;
+													break;
+												}
+												else recoil(previousPosition);
+												if(match(Node::ACCESS) && match(Node::BRACED)){
+													result = true;
+													break;
+												}
+												else recoil(previousPosition);
+
+												if(match(Node::ARGLIST)){
+													result = true;
+													break;
+												}
+												else recoil(previousPosition);
+
+												if(match(Node::ACCESS)){
+													result = true;
+													break;
+												}
+												else recoil(previousPosition);
+											
+											} break;
+/*CHANGED*/
+				case Node::ACCESS: 			{										
+												if(match(Token::BRACKET_LEFT) && match(Node::EXPRESSION) && match(Token::BRACKET_RIGHT)){
+													result = true;
+													break;
+												}
+												else recoil(previousPosition);
+
+											} break;
+/*CHANGED*/
+				case Node::EXPR8: 			{
 												if(match(Token::BRACE_LEFT) && match(Node::EXPRESSION) && match(Token::BRACE_RIGHT)){
 													result = true;
 													break;
@@ -221,6 +262,47 @@ bool match(Token token){
 												else recoil(previousPosition);
 
 												if (match(Node::VALUE)) {
+													result = true;
+													break;
+												}
+												else recoil(previousPosition);
+											
+											} break;
+/*CHANGED*/
+				case Node::EXPR7: 			{										
+												if(match(Node::EXPR8) && match(Node::BRACED)){
+													result = true;
+													break;
+												}
+												else recoil(previousPosition);
+
+												if(match(Node::EXPR8)){
+													result = true;
+													break;
+												}
+												else recoil(previousPosition);
+											} break;	
+/*CHANGED*/
+			case Node::EXPR6: 			{
+												if(match(Node::EXPR7) && match(Token(Token::OPERATOR, "->" )) && match(Node::EXPR6)){
+													result = true;
+													break;
+												}
+												else recoil(previousPosition);
+
+												if(match(Node::EXPR7) && match(Token::DOT) && match(Node::EXPR6)){
+													result = true;
+													break;
+												}
+												else recoil(previousPosition);
+
+												if(match(Token(Token::OPERATOR, "*" )) && match(Node::EXPR7)){
+													result = true;
+													break;
+												}
+												else recoil(previousPosition);
+
+												if(match(Node::EXPR7)){
 													result = true;
 													break;
 												}
@@ -1230,6 +1312,7 @@ bool match(Token token){
 		memo[make_pair(what, previousPosition)] = make_pair(result, currentPosition);
 
 		depth --;
+		//I don't think, this 'if' is necessary
 		if(result == false){
 			recoil(previousPosition);
 		}
@@ -1239,7 +1322,7 @@ bool match(Token token){
 
 	Node* get(const Token &what, bool ignore = false){
 		
-
+		//Rewrite, add 'recoil'
 		if(ignore && match(what)){
 			return new Node();
 		}
@@ -1271,7 +1354,7 @@ bool match(Token token){
 
 	Node* get(Node::NodeType what, bool ignore = false){
 				int previousPosition = currentPosition;
-				log << previousPosition << "(prev pos)";
+			//	log << previousPosition << "(prev pos)";
 				Node *result = new Node(what);
 				switch(what){
 				case Node::VALUE: {				
@@ -1399,8 +1482,47 @@ bool match(Token token){
 
 												
 											} break;
+/*CHANGED
+				case Node::BRACED: 			{
+												if(match(Node::ARGLIST) && match(Node::BRACED)){
+													
+												}
+												else recoil(previousPosition);
+												if(match(Node::ACCESS) && match(Node::BRACED)){
+													result = true;
+													break;
+												}
+												else recoil(previousPosition);
 
-				case Node::EXPR6: 			{
+												if(match(Node::ARGLIST)){
+													result = true;
+													break;
+												}
+												else recoil(previousPosition);
+
+												if(match(Node::ACCESS)){
+													result = true;
+													break;
+												}
+												else recoil(previousPosition);
+											
+											} break;
+
+
+*/
+				case Node::ACCESS: 			{										
+												if(match(Token::BRACKET_LEFT) && match(Node::EXPRESSION) && match(Token::BRACKET_RIGHT)){
+													recoil(previousPosition);
+													get(Token::BRACKET_LEFT, ignore);
+													result->children.push_back(get(Node::EXPRESSION));
+													get(Token::BRACKET_RIGHT, ignore);
+													return result;
+												}
+												else recoil(previousPosition);
+
+											} break;
+
+				case Node::EXPR8: 			{
 												if(match(Token::BRACE_LEFT) && match(Node::EXPRESSION) && match(Token::BRACE_RIGHT)){
 													recoil(previousPosition);
 													get(Token::BRACE_LEFT, ignore);
@@ -1412,9 +1534,73 @@ bool match(Token token){
 
 												if (match(Node::VALUE)) {
 													recoil(previousPosition);
-												//#	result->children.push_back(get(Node::VALUE));
-												//#	return result;
-													return get(Node::VALUE);
+													result->children.push_back(get(Node::VALUE));
+													return result;
+												}
+												else recoil(previousPosition);
+											
+											} break;
+
+				case Node::EXPR7: 			{										
+												if(match(Node::EXPR8) && match(Node::BRACED)){
+													recoil(previousPosition);
+													result->children.push_back(get(Node::EXPR8));
+													result->children.push_back(get(Node::BRACED));
+													return result;
+												}
+												else recoil(previousPosition);
+
+												if(match(Node::EXPR8)){
+													recoil(previousPosition);
+													result->children.push_back(get(Node::EXPR8));
+													return result;
+												}
+												else recoil(previousPosition);
+											} break;	
+			case Node::EXPR6: 			{
+												if(match(Node::EXPR7) && match(Token(Token::OPERATOR, "->" )) && match(Node::EXPR6)){
+													recoil(previousPosition);
+													auto tmp = get(Node::EXPR7);
+
+													auto root = get(Token(Token::OPERATOR, "->"));
+													root->children.push_back(tmp);
+																										
+													root->children.push_back(get(Node::EXPR6));
+													result->children.push_back(root);
+
+													return result;	
+												}
+												else recoil(previousPosition);
+
+												if(match(Node::EXPR7) && match(Token::DOT) && match(Node::EXPR6)){
+													recoil(previousPosition);
+													auto tmp = get(Node::EXPR7);
+
+													auto root = get(Token::DOT);
+													root->children.push_back(tmp);
+																										
+													root->children.push_back(get(Node::EXPR6));
+													result->children.push_back(root);
+
+													return result;	
+												}
+												else recoil(previousPosition);
+
+												if(match(Token(Token::OPERATOR, "*" )) && match(Node::EXPR7)){
+													recoil(previousPosition);
+													auto root = get(Token(Token::OPERATOR, "*" ));
+					
+													root->children.push_back(get(Node::EXPR7));
+													result->children.push_back(root);
+
+													return result;	
+												}
+												else recoil(previousPosition);
+
+												if(match(Node::EXPR7)){
+													recoil(previousPosition);
+													result->children.push_back(get(Node::EXPR7));
+													return result;
 												}
 												else recoil(previousPosition);
 											
@@ -3216,6 +3402,7 @@ bool match(Token token){
 		match(Token::BEGIN);
 
 		match(Node::OPERATORS);
+//		match(Node::EXPR6);
 
 		if(!match(Token::END)){
 			throw RecognitionException ("Here should be end of input! " + currentToken.position.toString());	
@@ -3225,17 +3412,18 @@ bool match(Token token){
 
 		log.flush();
 
-		log << "BUILDING TREE\n\n==========\n\n";
+
+/*		log << "BUILDING TREE\n\n==========\n\n";
 		logDepth = false;
 		recoil(0);
-		tree = new Node(Node::PROGRAM);
-		tree->children.push_back(get(Token::BEGIN));
+*/		tree = new Node(Node::PROGRAM);
+/*		tree->children.push_back(get(Token::BEGIN));
 		tree->children.push_back( get(Node::OPERATORS));
 		tree->children.push_back(get(Token::END));
 
 
 		log << "BUILT TREE\n\n==========\n\n";
-
+*/
 
 		
 	}
