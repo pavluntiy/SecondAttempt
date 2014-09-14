@@ -50,6 +50,7 @@ public:
 		EXPR8,
 		BRACED,
 		ACCESS,
+		ACCESS_EXPR,
 		L_OR,
 		L_AND,
 		B_OR,
@@ -145,20 +146,20 @@ public:
 			case CONDITION: 	return "CONDITION";
 			case EXPRESSION: 	return "EXPRESSION";
 			case VARDEF:		return "VARDEF";
-			case CASES:		return "CASES";
-			case CASE: 		return "CASE";	
+			case CASES:			return "CASES";
+			case CASE: 			return "CASE";	
 			case ATOMIC_CONDITION:	return "ATOMIC_CONDITION";
 			case COMPARISION: 		return "COMPARISION";
 			case IS_IN_EXPRESSION: 	return "IS_IN_EXPRESSION";
-			case AND_COND: return "AND_COND";
+			case AND_COND: 		return "AND_COND";
 			case FUNCALL: 		return "FUNCALL";
 			case NAME: 			return "NAME";	
-			case NAME1: 			return "NAME1";	
-			case NAMESPACE: 			return "NAMESPACE";	
+			case NAME1: 		return "NAME1";	
+			case NAMESPACE: 	return "NAMESPACE";	
 			case ASSIGNMENT: 	return "ASSIGNMENT";
 			case ARGLIST: 		return "ARGLIST";
 			case LIST: 			return "LIST";
-			case LIST_ELEM: return "LIST_ELEM";
+			case LIST_ELEM: 	return "LIST_ELEM";
 			case VALUE: 		return "VALUE";
 			case CONSTANT: 		return "CONSTANT";
 			case ID: 			return "ID";
@@ -172,6 +173,7 @@ public:
 			case EXPR8:			return "EXPR8";
 			case BRACED:		return "BRACED";
 			case ACCESS:		return "ACCESS";
+			case ACCESS_EXPR:	return "ACCESS_EXPR";
 
 			case L_OR:			return "L_OR";
 			case L_AND:			return "L_AND";

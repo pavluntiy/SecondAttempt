@@ -81,8 +81,8 @@
 
 
 
-TO_DELETE: +<funcall> ::=
-				//<funcall><arglist>
+!!!!!! +<funcall> ::=
+!!!			//<funcall><arglist>
 				+<name><arglist>
 
 +<arglist> ::= 
@@ -145,17 +145,17 @@ TO_DELETE: 			<name1> -> <name>
 TO_DELETE: 			<name1>.<name>
 
 <assignment> ::= 
-	+<name> = <expression>
-	+<name> += <expression>
-	+<name> /= <expression>
-	+<name> -= <expression>
-	+<name> *= <expression>
-	+<name> %= <expression>
-	+<name> |= <expression>
-	+<name> ||= <expression>
-	+<name> &= <expression>
-	+<name> &&= <expression>
-	+<name> ~= <expression>
+!	+<name> = <expression>
+!	+<name> += <expression>
+!	+<name> /= <expression>
+!	+<name> -= <expression>
+!	+<name> *= <expression>
+!	+<name> %= <expression>
+!	+<name> |= <expression>
+!	+<name> ||= <expression>
+!	+<name> &= <expression>
+!	+<name> &&= <expression>
+!	+<name> ~= <expression>
 
 /*
 +<expr1> ::=		
@@ -198,9 +198,9 @@ TO_DELETE: 			<name1>.<name>
 				<is_in_Expression> & <l_and>
 
 <is_in_Expression> ::=
-			<comparision>
-			<comparision> is <comparision>
-			<comparision> in <comparision>
+!			<comparision>
+!			<comparision> is <comparision>
+!			<comparision> in <comparision>
 
 <comparision> ::=
 				<b_or>
@@ -243,7 +243,7 @@ TO_DELETE: 			<name1>.<name>
 			+<expr5>
 
 <expr5> ::= 
-			<expr6> ** <expr6>
+!			<expr6> ** <expr6>
 
 
 <expr6> ::= 	
@@ -255,8 +255,8 @@ TO_DELETE: 			<name1>.<name>
 	 			<expr7>
 
 <expr7> ::=
- 			<expr8> <braced>
- 			<expr8>
+ !			<expr8> <braced>
+ !			<expr8>
 <expr8> ::= 
 			(<expression>)
 			<value>
@@ -270,7 +270,7 @@ TO_DELETE: 			<name1>.<name>
 <access> ::=
 				[<expression>]
 
-
+<access_expr> ::= !!!!!!!!!!!!!!!!!!!
 <declaration> ::=
  +				<type> <varlist>
  //-				<varQ> <declaration>

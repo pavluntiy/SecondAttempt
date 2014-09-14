@@ -153,8 +153,8 @@ bool match(Token token){
 													break;
 												}
 												else recoil(previousPosition);
-
-									*/			if(match(Node::ARGLIST)){
+									*/
+												if(match(Node::ARGLIST)){
 													result = true;
 													break;
 												}
@@ -253,6 +253,15 @@ bool match(Token token){
 												else recoil(previousPosition);
 
 											} break;
+
+
+				case Node::ACCESS_EXPR:      {
+												if(match(Node::EXPR8) && match(Node::ACCESS)){
+													result = true;
+													break;
+												}
+												else recoil(previousPosition);
+											}
 /*CHANGED*/
 				case Node::EXPR8: 			{
 												if(match(Token::BRACE_LEFT) && match(Node::EXPRESSION) && match(Token::BRACE_RIGHT)){
@@ -270,7 +279,29 @@ bool match(Token token){
 											} break;
 /*CHANGED*/
 				case Node::EXPR7: 			{										
-												if(match(Node::EXPR8) && match(Node::BRACED)){
+												if(match(Node::FUNCALL) && match(Node::BRACED)){
+
+													result = true;
+													break;
+												}
+												else recoil(previousPosition);
+
+												if(match(Node::ACCESS_EXPR) && match(Node::BRACED)){
+
+													result = true;
+													break;
+												}
+												else recoil(previousPosition);
+
+												if(match(Node::FUNCALL)){
+
+													result = true;
+													break;
+												}
+												else recoil(previousPosition);
+
+												if(match(Node::ACCESS_EXPR)){
+
 													result = true;
 													break;
 												}
@@ -302,6 +333,12 @@ bool match(Token token){
 												}
 												else recoil(previousPosition);
 
+					/*							if(match(Node::EXPR7) && match(Node::ARGLIST) && match(Token(Token::OPERATOR, "->")) && match(Node::EXPR6)){
+													result = true;
+													break;
+												}
+												else recoil(previousPosition);
+						*/
 												if(match(Node::EXPR7)){
 													result = true;
 													break;
@@ -311,7 +348,7 @@ bool match(Token token){
 											} break;
 
 				case Node::EXPR5: 			{										
-												if(match(Node::EXPR6) && match(Token(Token::OPERATOR, "**")) && match(Node::EXPR6)){
+												if(match(Node::EXPR6) && match(Token(Token::OPERATOR, "**")) && match(Node::EXPR5)){
 													result = true;
 													break;
 												}
@@ -475,37 +512,37 @@ bool match(Token token){
 											} break;
 
 				case Node::COMPARISION: {										
-												if(match(Node::B_OR) && match(Token(Token::OPERATOR, "==")) && match(Node::B_OR)){
+												if(match(Node::B_OR) && match(Token(Token::OPERATOR, "==")) && match(Node::COMPARISION)){
 													result = true;
 													break;
 												}
 												else recoil(previousPosition);
 
-												if(match(Node::B_OR) && match(Token(Token::OPERATOR, ">")) && match(Node::B_OR)){
+												if(match(Node::B_OR) && match(Token(Token::OPERATOR, ">")) && match(Node::COMPARISION)){
 													result = true;
 													break;
 												}
 												else recoil(previousPosition);
 
-												if(match(Node::B_OR) && match(Token(Token::OPERATOR, "<")) && match(Node::B_OR)){
+												if(match(Node::B_OR) && match(Token(Token::OPERATOR, "<")) && match(Node::COMPARISION)){
 													result = true;
 													break;
 												}
 												else recoil(previousPosition);
 
-												if(match(Node::B_OR) && match(Token(Token::OPERATOR, ">=")) && match(Node::B_OR)){
+												if(match(Node::B_OR) && match(Token(Token::OPERATOR, ">=")) && match(Node::COMPARISION)){
 													result = true;
 													break;
 												}
 												else recoil(previousPosition);
 
-												if(match(Node::B_OR) && match(Token(Token::OPERATOR, "<=")) && match(Node::B_OR)){
+												if(match(Node::B_OR) && match(Token(Token::OPERATOR, "<=")) && match(Node::COMPARISION)){
 													result = true;
 													break;
 												}
 												else recoil(previousPosition);
 
-												if(match(Node::B_OR) && match(Token(Token::OPERATOR, "!=")) && match(Node::B_OR)){
+												if(match(Node::B_OR) && match(Token(Token::OPERATOR, "!=")) && match(Node::COMPARISION)){
 													result = true;
 													break;
 												}
@@ -521,13 +558,13 @@ bool match(Token token){
 
 
 						case Node::IS_IN_EXPRESSION: {
-										if(match(Node::COMPARISION) && match(Token(Token::KEYWORD, "is")) && match(Node::COMPARISION)){
+										if(match(Node::COMPARISION) && match(Token(Token::KEYWORD, "is")) && match(Node::IS_IN_EXPRESSION)){
 													result = true;
 													break;
 										}
 										else recoil(previousPosition);
 
-										if(match(Node::COMPARISION) && match(Token(Token::KEYWORD, "in")) && match(Node::COMPARISION)){
+										if(match(Node::COMPARISION) && match(Token(Token::KEYWORD, "in")) && match(Node::IS_IN_EXPRESSION)){
 													result = true;
 													break;
 										}
@@ -598,19 +635,19 @@ bool match(Token token){
 
 					case Node::ASSIGNMENT: {		
 
-												if(match(Node::NAME) && match(Token(Token::OPERATOR, "=")) && match(Node::L_OR)){
+												if(match(Node::L_OR) && match(Token(Token::OPERATOR, "=")) && match(Node::EXPRESSION)){
 													result = true;
 													break;
 												}
 												else recoil(previousPosition);
 
-												if(match(Node::NAME) && match(Token(Token::OPERATOR, "+=")) && match(Node::L_OR)){
+												if(match(Node::L_OR) && match(Token(Token::OPERATOR, "+=")) && match(Node::EXPRESSION)){
 													result = true;
 													break;
 												}
 												else recoil(previousPosition);
 
-												if(match(Node::NAME) && match(Token(Token::OPERATOR, "-=")) && match(Node::L_OR)){
+												if(match(Node::L_OR) && match(Token(Token::OPERATOR, "-=")) && match(Node::EXPRESSION)){
 													result = true;
 													break;
 												}
@@ -666,7 +703,7 @@ bool match(Token token){
 					case Node::FUNCALL: {
 
 
-										if(match(Node::NAME) && match(Node::ARGLIST)){
+										if(match(Node::EXPR8) && match(Node::ARGLIST)){
 													result = true;
 													break;
 										}
@@ -685,7 +722,7 @@ bool match(Token token){
 											}
 										else recoil(previousPosition);
 
-										if(match(Token(Token::OPERATOR, "*")) && match(Node::NAME1)){
+							/*			if(match(Token(Token::OPERATOR, "*")) && match(Node::NAME1)){
 													result = true;
 												break;
 											}
@@ -702,7 +739,7 @@ bool match(Token token){
 													break;
 											}
 											else recoil(previousPosition);
-
+						*/
 										if(match(Node::NAME1)){
 													result = true;
 												break;
@@ -1352,13 +1389,40 @@ bool match(Token token){
 
 	}
 
+/*	void push_right(Node *&to, Node *&what, Node::NodeType type){
+
+	}
+	*/
+	void push_left(Node *what, Node *&to, Node::NodeType addType, Node::NodeType stopType){
+		Node *current = to;
+		while(current->children.size() > 0 && current->children[0]->type != stopType){
+			current = current->children[0];
+		}
+
+		if(current->children.size() > 0){
+			
+		//	if(addType != current->type){
+				what->children.push_back(current->children[0]);
+				current->children[0] = new Node(addType);
+				current->children[0]->children.push_back(what);
+		//	}
+		//	else {
+		//		current->children.push_back(what);
+		//	}
+		}
+		else {
+			current->children.push_back(what);
+		}
+		
+	}
+
 	Node* get(Node::NodeType what, bool ignore = false){
 				int previousPosition = currentPosition;
 			//	log << previousPosition << "(prev pos)";
 				Node *result = new Node(what);
 				switch(what){
 				case Node::VALUE: {				
-												if(match(Node::NAME) && match(Token::BRACKET_LEFT) && match(Node::EXPRESSION) && match(Token::BRACKET_RIGHT)){
+									/*			if(match(Node::NAME) && match(Token::BRACKET_LEFT) && match(Node::EXPRESSION) && match(Token::BRACKET_RIGHT)){
 													recoil(previousPosition);
 
 													auto tmp = get(Node::NAME);
@@ -1376,7 +1440,7 @@ bool match(Token token){
 												}
 												else recoil(previousPosition);
 
-												if(match(Node::FUNCALL) && match(Token::BRACKET_LEFT) && match(Node::EXPRESSION) && match(Token::BRACKET_RIGHT)){
+								/*				if(match(Node::FUNCALL) && match(Token::BRACKET_LEFT) && match(Node::EXPRESSION) && match(Token::BRACKET_RIGHT)){
 													recoil(previousPosition);
 
 													auto tmp = get(Node::FUNCALL);
@@ -1392,7 +1456,7 @@ bool match(Token token){
 													return result;
 												}
 												else recoil(previousPosition);
-
+							*/	
 												if(match(Node::ARGLIST)){
 													recoil(previousPosition);
 													result->children.push_back(get(Node::ARGLIST));
@@ -1401,7 +1465,7 @@ bool match(Token token){
 												}
 												else recoil(previousPosition);
 
-												if(match(Node::FUNCALL) && match(Token::DOT) && match(Node::VALUE)){
+							/*					if(match(Node::FUNCALL) && match(Token::DOT) && match(Node::VALUE)){
 													recoil(previousPosition);
 													auto tmp = get(Node::FUNCALL);
 													auto root = get(Token::DOT);
@@ -1413,7 +1477,7 @@ bool match(Token token){
 												}
 												else recoil(previousPosition);
 
-												if(match(Node::FUNCALL) && match(Token(Token::OPERATOR, "->")) && match(Node::VALUE)){
+								/*				if(match(Node::FUNCALL) && match(Token(Token::OPERATOR, "->")) && match(Node::VALUE)){
 													recoil(previousPosition);
 													auto tmp = get(Node::FUNCALL);
 
@@ -1434,7 +1498,7 @@ bool match(Token token){
 													return result;
 												}
 												else recoil(previousPosition);
-
+								*/
 												if(match(Token::INT)){
 													recoil(previousPosition);
 													result->children.push_back(get(Token::INT));
@@ -1482,34 +1546,51 @@ bool match(Token token){
 
 												
 											} break;
-/*CHANGED
+
 				case Node::BRACED: 			{
 												if(match(Node::ARGLIST) && match(Node::BRACED)){
-													
+													recoil(previousPosition);
+													auto tmp = get(Node::ARGLIST);
+												
+													auto tmp2 = get(Node::BRACED);
+													push_left(tmp, tmp2, Node::SPECIAL, Node::END);
+													return tmp2;
 												}
 												else recoil(previousPosition);
+
 												if(match(Node::ACCESS) && match(Node::BRACED)){
-													result = true;
-													break;
+													recoil(previousPosition);
+													auto tmp = get(Node::ACCESS);
+												
+													auto tmp2 = get(Node::BRACED);
+
+													push_left(tmp, tmp2, Node::ACCESS, Node::END);
+													return tmp2;
 												}
 												else recoil(previousPosition);
 
 												if(match(Node::ARGLIST)){
-													result = true;
-													break;
+													recoil(previousPosition);
+
+													result->children.push_back(get(Node::ARGLIST));
+
+													return result;	
 												}
 												else recoil(previousPosition);
 
 												if(match(Node::ACCESS)){
-													result = true;
-													break;
+													recoil(previousPosition);
+
+													result->children.push_back(get(Node::ACCESS));
+
+													return result;	
 												}
 												else recoil(previousPosition);
 											
 											} break;
 
 
-*/
+
 				case Node::ACCESS: 			{										
 												if(match(Token::BRACKET_LEFT) && match(Node::EXPRESSION) && match(Token::BRACKET_RIGHT)){
 													recoil(previousPosition);
@@ -1521,6 +1602,17 @@ bool match(Token token){
 												else recoil(previousPosition);
 
 											} break;
+
+				case Node::ACCESS_EXPR:      {
+												if(match(Node::EXPR8) && match(Node::ACCESS)){
+													recoil(previousPosition);
+													result->children.push_back(get(Node::EXPR8));
+													result->children.push_back(get(Node::ACCESS));
+													return result;
+												}
+												else recoil(previousPosition);
+
+											}
 
 				case Node::EXPR8: 			{
 												if(match(Token::BRACE_LEFT) && match(Node::EXPRESSION) && match(Token::BRACE_RIGHT)){
@@ -1536,30 +1628,89 @@ bool match(Token token){
 													recoil(previousPosition);
 													result->children.push_back(get(Node::VALUE));
 													return result;
+												//	return get(Node::VALUE);
 												}
 												else recoil(previousPosition);
 											
 											} break;
 
 				case Node::EXPR7: 			{										
-												if(match(Node::EXPR8) && match(Node::BRACED)){
+												if(match(Node::FUNCALL) && match(Node::BRACED)){
+													
 													recoil(previousPosition);
-													result->children.push_back(get(Node::EXPR8));
-													result->children.push_back(get(Node::BRACED));
+													auto tmp = get(Node::FUNCALL);
+												
+													auto tmp2 = get(Node::BRACED);
+
+													push_left(tmp, tmp2, Node::FUNCALL, Node::END);
+													return tmp2;
+												}
+												else recoil(previousPosition);
+
+
+												if(match(Node::ACCESS_EXPR) && match(Node::BRACED)){
+													
+													recoil(previousPosition);
+													auto tmp = get(Node::EXPR8);
+													
+													auto tmp2 = get(Node::BRACED);
+
+													push_left(tmp, tmp2, Node::FUNCALL, Node::END);
+													return tmp2;
+												}
+												else recoil(previousPosition);
+
+												if(match(Node::FUNCALL)){
+													
+													recoil(previousPosition);
+													result->children.push_back(get(Node::FUNCALL));
 													return result;
 												}
 												else recoil(previousPosition);
 
+
+												if(match(Node::ACCESS_EXPR)){
+													
+													recoil(previousPosition);
+													result->children.push_back(get(Node::ACCESS_EXPR));
+													return result;
+												}
+												else recoil(previousPosition);
+
+	
 												if(match(Node::EXPR8)){
 													recoil(previousPosition);
 													result->children.push_back(get(Node::EXPR8));
 													return result;
+												//	return get(Node::EXPR8);
 												}
 												else recoil(previousPosition);
 											} break;	
-			case Node::EXPR6: 			{
-												if(match(Node::EXPR7) && match(Token(Token::OPERATOR, "->" )) && match(Node::EXPR6)){
+			case Node::EXPR6: 			{		
+												//cout << (match(Node::EXPR7));//
+												// && match(Token(Token::OPERATOR, "->" )));// && match(Node::EXPR6));
+												//cout << currentToken.text;
+												//recoil(previousPosition);
+												if(match(Node::EXPR7) && match(Token(Token::OPERATOR, "->" )) && match(Node::EXPR6) ){
 													recoil(previousPosition);
+												//	cout << "asdfasdfasfdasd";
+													auto tmp = get(Node::EXPR7);
+
+													auto left = get(Token(Token::OPERATOR, "->"));
+													left->children.push_back(tmp);
+
+												//	result->children.push_back(left);
+																										
+												//	result->children.push_back(get(Node::EXPR2));
+													auto tmp2 = get(Node::EXPR6);
+
+													push_left(left, tmp2, Node::EXPR6, Node::EXPR7);
+
+												//	result->children.push_back(root);
+
+												//	cout << "asdfasdfasdfasdf";
+													return tmp2;
+												/*	recoil(previousPosition);
 													auto tmp = get(Node::EXPR7);
 
 													auto root = get(Token(Token::OPERATOR, "->"));
@@ -1569,11 +1720,29 @@ bool match(Token token){
 													result->children.push_back(root);
 
 													return result;	
+												*/
 												}
 												else recoil(previousPosition);
 
 												if(match(Node::EXPR7) && match(Token::DOT) && match(Node::EXPR6)){
 													recoil(previousPosition);
+													auto tmp = get(Node::EXPR7);
+
+													auto left = get(Token(Token::DOT));
+													left->children.push_back(tmp);
+
+												//	result->children.push_back(left);
+																										
+												//	result->children.push_back(get(Node::EXPR2));
+													auto tmp2 = get(Node::EXPR6);
+
+													push_left(left, tmp2, Node::EXPR6, Node::EXPR7);
+
+												//	result->children.push_back(root);
+
+
+													return tmp2;
+												/*	recoil(previousPosition);
 													auto tmp = get(Node::EXPR7);
 
 													auto root = get(Token::DOT);
@@ -1583,6 +1752,7 @@ bool match(Token token){
 													result->children.push_back(root);
 
 													return result;	
+													*/
 												}
 												else recoil(previousPosition);
 
@@ -1600,6 +1770,7 @@ bool match(Token token){
 												if(match(Node::EXPR7)){
 													recoil(previousPosition);
 													result->children.push_back(get(Node::EXPR7));
+												//	return get(Node::EXPR7);
 													return result;
 												}
 												else recoil(previousPosition);
@@ -1607,14 +1778,14 @@ bool match(Token token){
 											} break;
 
 			case Node::EXPR5: 			{										
-												if(match(Node::EXPR6) && match(Token(Token::OPERATOR, "**")) && match(Node::EXPR6)){
+												if(match(Node::EXPR6) && match(Token(Token::OPERATOR, "**")) && match(Node::EXPR5)){
 													recoil(previousPosition);
 													auto tmp = get(Node::EXPR6);
 
 													auto root = get(Token(Token::OPERATOR, "**"));
 													root->children.push_back(tmp);
 																										
-													root->children.push_back(get(Node::EXPR6));
+													root->children.push_back(get(Node::EXPR5));
 													result->children.push_back(root);
 
 													return result;	
@@ -1623,15 +1794,16 @@ bool match(Token token){
 
 												if(match(Node::EXPR6)){
 													recoil(previousPosition);
-												//#	result->children.push_back(get(Node::EXPR6));
-												//#	return result;
-													return get(Node::EXPR6);
+													result->children.push_back(get(Node::EXPR6));
+													return result;
+												//	return get(Node::EXPR6);
 												}
 												else recoil(previousPosition);
 											} break;	
 
 				case Node::EXPR4: 			{
 												if(match(Token(Token::OPERATOR, "~")) && match(Node::EXPR5)){
+
 													recoil(previousPosition);
 
 													auto root = get(Token(Token::OPERATOR, "~"));
@@ -1640,6 +1812,7 @@ bool match(Token token){
 													result->children.push_back(root);
 
 													return result;	
+												
 												}
 												else recoil(previousPosition);
 												if (match(Token(Token::OPERATOR, "!")) && match(Node::EXPR5)) {
@@ -1679,9 +1852,9 @@ bool match(Token token){
 												if(match(Node::EXPR5)){
 													recoil(previousPosition);
 
-													//#result->children.push_back(get(Node::EXPR5));
-													//#return result;	
-													return get(Node::EXPR5);
+													result->children.push_back(get(Node::EXPR5));
+													return result;	
+													//return get(Node::EXPR5);
 												}
 												else recoil(previousPosition);
 
@@ -1695,18 +1868,53 @@ bool match(Token token){
 													recoil(previousPosition);
 													auto tmp = get(Node::EXPR4);
 
+													auto left = get(Token(Token::OPERATOR, "*"));
+													left->children.push_back(tmp);
+
+												//	result->children.push_back(left);
+																										
+												//	result->children.push_back(get(Node::EXPR2));
+													auto tmp2 = get(Node::EXPR3);
+
+													push_left(left, tmp2, Node::EXPR3, Node::EXPR4);
+
+												//	result->children.push_back(root);
+
+
+													return tmp2;
+												/*	recoil(previousPosition);
+													auto tmp = get(Node::EXPR4);
+
 													auto root = get(Token(Token::OPERATOR, "*"));
 													root->children.push_back(tmp);
 																										
 													root->children.push_back(get(Node::EXPR3));
 													result->children.push_back(root);
 
-													return result;	
+													return result;
+												*/	
 												}
 												else recoil(previousPosition);
 
 												if(match(Node::EXPR4) && match(Token(Token::OPERATOR, "/")) && match(Node::EXPR3)){
 													recoil(previousPosition);
+													auto tmp = get(Node::EXPR4);
+
+													auto left = get(Token(Token::OPERATOR, "/"));
+													left->children.push_back(tmp);
+
+												//	result->children.push_back(left);
+																										
+												//	result->children.push_back(get(Node::EXPR2));
+													auto tmp2 = get(Node::EXPR3);
+
+													push_left(left, tmp2, Node::EXPR3, Node::EXPR4);
+
+												//	result->children.push_back(root);
+
+
+													return tmp2;
+												/*	recoil(previousPosition);
 													auto tmp = get(Node::EXPR4);
 
 													auto root = get(Token(Token::OPERATOR, "/"));
@@ -1716,11 +1924,29 @@ bool match(Token token){
 													result->children.push_back(root);
 
 													return result;	
+												*/
 												}
 												else recoil(previousPosition);
 
 												if(match(Node::EXPR4) && match(Token(Token::OPERATOR, "%")) && match(Node::EXPR3)){
 													recoil(previousPosition);
+													auto tmp = get(Node::EXPR4);
+
+													auto left = get(Token(Token::OPERATOR, "%"));
+													left->children.push_back(tmp);
+
+												//	result->children.push_back(left);
+																										
+												//	result->children.push_back(get(Node::EXPR2));
+													auto tmp2 = get(Node::EXPR3);
+
+													push_left(left, tmp2, Node::EXPR3, Node::EXPR4);
+
+												//	result->children.push_back(root);
+
+
+													return tmp2;
+												/*	recoil(previousPosition);
 													auto tmp = get(Node::EXPR4);
 
 													auto root = get(Token(Token::OPERATOR, "%"));
@@ -1730,14 +1956,15 @@ bool match(Token token){
 													result->children.push_back(root);
 
 													return result;
+													*/
 												}
 												else recoil(previousPosition);
 
 												if(match(Node::EXPR4)){
 													recoil(previousPosition);
-												//#	result->children.push_back(get(Node::EXPR4));
-												//#	return result;
-													return get(Node::EXPR4);
+													result->children.push_back(get(Node::EXPR4));
+													return result;
+												//	return get(Node::EXPR4);
 												}
 												else recoil(previousPosition);
 											} break;	
@@ -1747,6 +1974,24 @@ bool match(Token token){
 													recoil(previousPosition);
 													auto tmp = get(Node::EXPR3);
 
+													auto left = get(Token(Token::OPERATOR, "+"));
+													left->children.push_back(tmp);
+
+												//	result->children.push_back(left);
+																										
+												//	result->children.push_back(get(Node::EXPR2));
+													auto tmp2 = get(Node::EXPR2);
+
+													push_left(left, tmp2, Node::EXPR2, Node::EXPR3);
+
+												//	result->children.push_back(root);
+
+
+													return tmp2;
+														
+												/*	recoil(previousPosition);
+													auto tmp = get(Node::EXPR3);
+
 													auto root = get(Token(Token::OPERATOR, "+"));
 													root->children.push_back(tmp);
 																										
@@ -1754,10 +1999,30 @@ bool match(Token token){
 													result->children.push_back(root);
 
 													return result;
+												*/	
 												}
 												else recoil(previousPosition);
 
 												if(match(Node::EXPR3) && match(Token(Token::OPERATOR, "-")) && match(Node::EXPR2)){
+
+													recoil(previousPosition);
+													auto tmp = get(Node::EXPR3);
+
+													auto left = get(Token(Token::OPERATOR, "-"));
+													left->children.push_back(tmp);
+
+												//	result->children.push_back(left);
+																										
+												//	result->children.push_back(get(Node::EXPR2));
+													auto tmp2 = get(Node::EXPR2);
+
+													push_left(left, tmp2, Node::EXPR2, Node::EXPR3);
+
+												//	result->children.push_back(root);
+
+
+													return tmp2;
+													/*
 													recoil(previousPosition);
 													auto tmp = get(Node::EXPR3);
 
@@ -1768,21 +2033,22 @@ bool match(Token token){
 													result->children.push_back(root);
 
 													return result;
+													*/
 												}
 												else recoil(previousPosition);
 
 												if(match(Node::EXPR3)){
 													recoil(previousPosition);
-												//#	result->children.push_back(get(Node::EXPR3));
-												//#	return result;
-													return get(Node::EXPR3);
+													result->children.push_back(get(Node::EXPR3));
+													return result;
+												//$	return get(Node::EXPR3);
 												}
 												else recoil(previousPosition);
 											} break;	
 
 					case Node::EXPR1: 			{										
 												if(match(Node::EXPR2) && match(Token(Token::OPERATOR, "<<")) && match(Node::EXPR1)){
-													recoil(previousPosition);
+												/*	recoil(previousPosition);
 													auto tmp = get(Node::EXPR2);
 
 													auto root = get(Token(Token::OPERATOR, "<<"));
@@ -1792,29 +2058,35 @@ bool match(Token token){
 													result->children.push_back(root);
 
 													return result;
+													*/
+
+													recoil(previousPosition);
+													auto tmp = get(Node::EXPR2);
+													auto left = get(Token(Token::OPERATOR, "<<"));
+													left->children.push_back(tmp);
+													auto tmp2 = get(Node::EXPR1);
+													push_left(left, tmp2, Node::EXPR1, Node::EXPR2);
+													return tmp2;
 												}
 												else recoil(previousPosition);
 
 												if(match(Node::EXPR2) && match(Token(Token::OPERATOR, ">>")) && match(Node::EXPR1)){
 													recoil(previousPosition);
 													auto tmp = get(Node::EXPR2);
-
-													auto root = get(Token(Token::OPERATOR, ">>"));
-													root->children.push_back(tmp);
-																										
-													root->children.push_back(get(Node::EXPR1));
-													result->children.push_back(root);
-
-													return result;
+													auto left = get(Token(Token::OPERATOR, ">>"));
+													left->children.push_back(tmp);
+													auto tmp2 = get(Node::EXPR1);
+													push_left(left, tmp2, Node::EXPR1, Node::EXPR2);
+													return tmp2;
 												}
 												else recoil(previousPosition);
 
 
 												if(match(Node::EXPR2)){
 													recoil(previousPosition);
-												//#	result->children.push_back(get(Node::EXPR2));
-												//#	return result;
-													return get(Node::EXPR2);
+													result->children.push_back(get(Node::EXPR2));
+													return result;
+												//	return get(Node::EXPR2);
 												}
 												else recoil(previousPosition);
 											} break;	
@@ -1823,23 +2095,20 @@ bool match(Token token){
 												if(match(Node::EXPR1) && match(Token(Token::OPERATOR, "&")) && match(Node::B_AND)){
 													recoil(previousPosition);
 													auto tmp = get(Node::EXPR1);
-
-													auto root = get(Token(Token::OPERATOR, "&"));
-													root->children.push_back(tmp);
-																										
-													root->children.push_back(get(Node::B_AND));
-													result->children.push_back(root);
-
-													return result;
+													auto left = get(Token(Token::OPERATOR, "&"));
+													left->children.push_back(tmp);
+													auto tmp2 = get(Node::B_AND);
+													push_left(left, tmp2, Node::B_AND, Node::EXPR1);
+													return tmp2;
 												}
 												else recoil(previousPosition);
 
 
 												if(match(Node::EXPR1)){
 													recoil(previousPosition);
-												//#	result->children.push_back(get(Node::EXPR1));
-												//#	return result;
-													return get(Node::EXPR1);
+													result->children.push_back(get(Node::EXPR1));
+													return result;
+													//return get(Node::EXPR1);
 												}
 												else recoil(previousPosition);
 											} break;
@@ -1848,23 +2117,20 @@ bool match(Token token){
 												if(match(Node::B_AND) && match(Token(Token::OPERATOR, "^")) && match(Node::B_XOR)){
 													recoil(previousPosition);
 													auto tmp = get(Node::B_AND);
-
-													auto root = get(Token(Token::OPERATOR, "^"));
-													root->children.push_back(tmp);
-																										
-													root->children.push_back(get(Node::B_XOR));
-													result->children.push_back(root);
-
-													return result;
+													auto left = get(Token(Token::OPERATOR, "<<"));
+													left->children.push_back(tmp);
+													auto tmp2 = get(Node::B_XOR);
+													push_left(left, tmp2, Node::B_XOR, Node::B_AND);
+													return tmp2;
 												}
 												else recoil(previousPosition);
 
 
 												if(match(Node::B_AND)){
 													recoil(previousPosition);
-													//#result->children.push_back(get(Node::B_AND));
-													//#return result;
-													return get(Node::B_AND);
+													result->children.push_back(get(Node::B_AND));
+													return result;
+												//	return get(Node::B_AND);
 												}
 												else recoil(previousPosition);
 											} break;
@@ -1873,117 +2139,96 @@ bool match(Token token){
 												if(match(Node::B_XOR) && match(Token(Token::OPERATOR, "|")) && match(Node::B_OR)){
 													recoil(previousPosition);
 													auto tmp = get(Node::B_XOR);
-
-													auto root = get(Token(Token::OPERATOR, "|"));
-													root->children.push_back(tmp);
-																										
-													root->children.push_back(get(Node::B_OR));
-													result->children.push_back(root);
-
-													return result;
+													auto left = get(Token(Token::OPERATOR, "|"));
+													left->children.push_back(tmp);
+													auto tmp2 = get(Node::B_OR);
+													push_left(left, tmp2, Node::B_OR, Node::B_XOR);
+													return tmp2;
 												}
 												else recoil(previousPosition);
 
 
 												if(match(Node::B_XOR)){
 													recoil(previousPosition);
-													//#result->children.push_back(get(Node::B_XOR));
-													//#return result;
-													return get(Node::B_XOR);
+													result->children.push_back(get(Node::B_XOR));
+													return result;
+													//return get(Node::B_XOR);
 												}
 												else recoil(previousPosition);
 											} break;
 
 				case Node::COMPARISION: {										
-												if(match(Node::B_OR) && match(Token(Token::OPERATOR, "==")) && match(Node::B_OR)){
+												if(match(Node::B_OR) && match(Token(Token::OPERATOR, "==")) && match(Node::COMPARISION)){
 													recoil(previousPosition);
 													auto tmp = get(Node::B_OR);
-
-													auto root = get(Token(Token::OPERATOR, "=="));
-													root->children.push_back(tmp);
-																										
-													root->children.push_back(get(Node::B_OR));
-													result->children.push_back(root);
-
-													return result;
+													auto left = get(Token(Token::OPERATOR, "=="));
+													left->children.push_back(tmp);
+													auto tmp2 = get(Node::COMPARISION);
+													push_left(left, tmp2, Node::COMPARISION, Node::B_OR);
+													return tmp2;
 												}
 												else recoil(previousPosition);
 
-												if(match(Node::B_OR) && match(Token(Token::OPERATOR, ">")) && match(Node::B_OR)){
+												if(match(Node::B_OR) && match(Token(Token::OPERATOR, ">")) && match(Node::COMPARISION)){
 													recoil(previousPosition);
 													auto tmp = get(Node::B_OR);
-
-													auto root = get(Token(Token::OPERATOR, ">"));
-													root->children.push_back(tmp);
-																										
-													root->children.push_back(get(Node::B_OR));
-													result->children.push_back(root);
-
-													return result;
+													auto left = get(Token(Token::OPERATOR, ">"));
+													left->children.push_back(tmp);
+													auto tmp2 = get(Node::COMPARISION);
+													push_left(left, tmp2, Node::COMPARISION, Node::B_OR);
+													return tmp2;
 												}
 												else recoil(previousPosition);
 
-												if(match(Node::B_OR) && match(Token(Token::OPERATOR, "<")) && match(Node::B_OR)){
+												if(match(Node::B_OR) && match(Token(Token::OPERATOR, "<")) && match(Node::COMPARISION)){
 													recoil(previousPosition);
 													auto tmp = get(Node::B_OR);
-
-													auto root = get(Token(Token::OPERATOR, "<"));
-													root->children.push_back(tmp);
-																										
-													root->children.push_back(get(Node::B_OR));
-													result->children.push_back(root);
-
-													return result;
+													auto left = get(Token(Token::OPERATOR, "<"));
+													left->children.push_back(tmp);
+													auto tmp2 = get(Node::COMPARISION);
+													push_left(left, tmp2, Node::COMPARISION, Node::B_OR);
+													return tmp2;
 												}
 												else recoil(previousPosition);
 
-												if(match(Node::B_OR) && match(Token(Token::OPERATOR, ">=")) && match(Node::B_OR)){
+												if(match(Node::B_OR) && match(Token(Token::OPERATOR, ">=")) && match(Node::COMPARISION)){
 													recoil(previousPosition);
 													auto tmp = get(Node::B_OR);
-
-													auto root = get(Token(Token::OPERATOR, ">="));
-													root->children.push_back(tmp);
-																										
-													root->children.push_back(get(Node::B_OR));
-													result->children.push_back(root);
-
-													return result;
+													auto left = get(Token(Token::OPERATOR, ">="));
+													left->children.push_back(tmp);
+													auto tmp2 = get(Node::COMPARISION);
+													push_left(left, tmp2, Node::COMPARISION, Node::B_OR);
+													return tmp2;
 												}
 												else recoil(previousPosition);
 
-												if(match(Node::B_OR) && match(Token(Token::OPERATOR, "<=")) && match(Node::B_OR)){
+												if(match(Node::B_OR) && match(Token(Token::OPERATOR, "<=")) && match(Node::COMPARISION)){
 													recoil(previousPosition);
 													auto tmp = get(Node::B_OR);
-
-													auto root = get(Token(Token::OPERATOR, "<="));
-													root->children.push_back(tmp);
-																										
-													root->children.push_back(get(Node::B_OR));
-													result->children.push_back(root);
-
-													return result;
+													auto left = get(Token(Token::OPERATOR, "<="));
+													left->children.push_back(tmp);
+													auto tmp2 = get(Node::COMPARISION);
+													push_left(left, tmp2, Node::COMPARISION, Node::B_OR);
+													return tmp2;
 												}
 												else recoil(previousPosition);
 
-												if(match(Node::B_OR) && match(Token(Token::OPERATOR, "!=")) && match(Node::B_OR)){
+												if(match(Node::B_OR) && match(Token(Token::OPERATOR, "!=")) && match(Node::COMPARISION)){
 													recoil(previousPosition);
 													auto tmp = get(Node::B_OR);
-
-													auto root = get(Token(Token::OPERATOR, "!="));
-													root->children.push_back(tmp);
-																										
-													root->children.push_back(get(Node::B_OR));
-													result->children.push_back(root);
-
-													return result;
+													auto left = get(Token(Token::OPERATOR, "!="));
+													left->children.push_back(tmp);
+													auto tmp2 = get(Node::COMPARISION);
+													push_left(left, tmp2, Node::COMPARISION, Node::B_OR);
+													return tmp2;
 												}
 												else recoil(previousPosition);
 
 												if(match(Node::B_OR)){
 													recoil(previousPosition);
-													//#result->children.push_back(get(Node::B_OR));
-													//#return result;
-													return get(Node::B_OR);
+													result->children.push_back(get(Node::B_OR));
+													return result;
+													//return get(Node::B_OR);
 												}
 												else recoil(previousPosition);
 
@@ -1991,39 +2236,33 @@ bool match(Token token){
 
 
 						case Node::IS_IN_EXPRESSION: {
-										if(match(Node::COMPARISION) && match(Token(Token::KEYWORD, "is")) && match(Node::COMPARISION)){
+										if(match(Node::COMPARISION) && match(Token(Token::KEYWORD, "is")) && match(Node::IS_IN_EXPRESSION)){
 													recoil(previousPosition);
 													auto tmp = get(Node::COMPARISION);
-
-													auto root = get(Token(Token::KEYWORD, "is"));
-													root->children.push_back(tmp);
-																										
-													root->children.push_back(get(Node::COMPARISION));
-													result->children.push_back(root);
-
-													return result;
+													auto left = get(Token(Token::KEYWORD, "is"));
+													left->children.push_back(tmp);
+													auto tmp2 = get(Node::IS_IN_EXPRESSION);
+													push_left(left, tmp2, Node::IS_IN_EXPRESSION, Node::COMPARISION);
+													return tmp2;
 										}
 										else recoil(previousPosition);
 
-										if(match(Node::COMPARISION) && match(Token(Token::KEYWORD, "in")) && match(Node::COMPARISION)){
+										if(match(Node::COMPARISION) && match(Token(Token::KEYWORD, "in")) && match(Node::IS_IN_EXPRESSION)){
 													recoil(previousPosition);
 													auto tmp = get(Node::COMPARISION);
-
-													auto root = get(Token(Token::KEYWORD, "in"));
-													root->children.push_back(tmp);
-																										
-													root->children.push_back(get(Node::COMPARISION));
-													result->children.push_back(root);
-
-													return result;
+													auto left = get(Token(Token::KEYWORD, "in"));
+													left->children.push_back(tmp);
+													auto tmp2 = get(Node::IS_IN_EXPRESSION);
+													push_left(left, tmp2, Node::IS_IN_EXPRESSION, Node::COMPARISION);
+													return tmp2;
 										}
 										else recoil(previousPosition);
 
 										if(match(Node::COMPARISION)){
 													recoil(previousPosition);
-												//#	result->children.push_back(get(Node::COMPARISION));
-												//#	return result;
-													return get(Node::COMPARISION);
+													result->children.push_back(get(Node::COMPARISION));
+													return result;
+													//return get(Node::COMPARISION);
 										}
 										else recoil(previousPosition);
 
@@ -2034,23 +2273,20 @@ bool match(Token token){
 												if(match(Node::IS_IN_EXPRESSION) && match(Token(Token::OPERATOR, "&&")) && match(Node::L_AND)){
 													recoil(previousPosition);
 													auto tmp = get(Node::IS_IN_EXPRESSION);
-
-													auto root = get(Token(Token::OPERATOR, "&&"));
-													root->children.push_back(tmp);
-																										
-													root->children.push_back(get(Node::L_AND));
-													result->children.push_back(root);
-
-													return result;
+													auto left = get(Token(Token::OPERATOR, "&&"));
+													left->children.push_back(tmp);
+													auto tmp2 = get(Node::L_AND);
+													push_left(left, tmp2, Node::L_AND, Node::IS_IN_EXPRESSION);
+													return tmp2;
 												}
 												else recoil(previousPosition);
 
 
 												if(match(Node::IS_IN_EXPRESSION)){
 													recoil(previousPosition);
-													//#result->children.push_back(get(Node::IS_IN_EXPRESSION));
-													//#return result;
-													return get(Node::IS_IN_EXPRESSION);
+													result->children.push_back(get(Node::IS_IN_EXPRESSION));
+													return result;
+													//return get(Node::IS_IN_EXPRESSION);
 												}
 												else recoil(previousPosition);
 											} break;
@@ -2059,23 +2295,20 @@ bool match(Token token){
 												if(match(Node::L_AND) && match(Token(Token::OPERATOR, "||")) && match(Node::L_OR)){
 													recoil(previousPosition);
 													auto tmp = get(Node::L_AND);
-
-													auto root = get(Token(Token::OPERATOR, "||"));
-													root->children.push_back(tmp);
-																										
-													root->children.push_back(get(Node::L_OR));
-													result->children.push_back(root);
-
-													return result;
+													auto left = get(Token(Token::OPERATOR, "||"));
+													left->children.push_back(tmp);
+													auto tmp2 = get(Node::L_OR);
+													push_left(left, tmp2, Node::L_OR, Node::L_AND);
+													return tmp2;
 												}
 												else recoil(previousPosition);
 
 
 												if(match(Node::L_AND)){
 													recoil(previousPosition);
-													//#result->children.push_back(get(Node::L_AND));
-													//#return result;
-													return get(Node::L_AND);
+													result->children.push_back(get(Node::L_AND));
+													return result;
+													//return get(Node::L_AND);
 												}
 												else recoil(previousPosition);
 											} break;
@@ -2108,140 +2341,140 @@ bool match(Token token){
 
 					case Node::ASSIGNMENT: {		
 
-												if(match(Node::NAME) && match(Token(Token::OPERATOR, "=")) && match(Node::L_OR)){
+												if(match(Node::L_OR) && match(Token(Token::OPERATOR, "=")) && match(Node::EXPRESSION)){
 													recoil(previousPosition);
-													auto tmp = get(Node::NAME);
+													auto tmp = get(Node::L_OR);
 
 													auto root = get(Token(Token::OPERATOR, "="));
 													root->children.push_back(tmp);
 																										
-													root->children.push_back(get(Node::L_OR));
+													root->children.push_back(get(Node::EXPRESSION));
 													result->children.push_back(root);
 
 													return result;
 												}
 												else recoil(previousPosition);
 
-												if(match(Node::NAME) && match(Token(Token::OPERATOR, "+=")) && match(Node::L_OR)){
+												if(match(Node::L_OR) && match(Token(Token::OPERATOR, "+=")) && match(Node::EXPRESSION)){
 													recoil(previousPosition);
-													auto tmp = get(Node::NAME);
+													auto tmp = get(Node::L_OR);
 
 													auto root = get(Token(Token::OPERATOR, "+="));
 													root->children.push_back(tmp);
 																										
-													root->children.push_back(get(Node::L_OR));
+													root->children.push_back(get(Node::EXPRESSION));
 													result->children.push_back(root);
 
 													return result;
 												}
 												else recoil(previousPosition);
 
-												if(match(Node::NAME) && match(Token(Token::OPERATOR, "-=")) && match(Node::L_OR)){
+												if(match(Node::L_OR) && match(Token(Token::OPERATOR, "-=")) && match(Node::EXPRESSION)){
 													recoil(previousPosition);
-													auto tmp = get(Node::NAME);
+													auto tmp = get(Node::L_OR);
 
 													auto root = get(Token(Token::OPERATOR, "-="));
 													root->children.push_back(tmp);
 																										
-													root->children.push_back(get(Node::L_OR));
+													root->children.push_back(get(Node::EXPRESSION));
 													result->children.push_back(root);
 
 													return result;
 												}
 												else recoil(previousPosition);
 
-												if(match(Node::NAME) && match(Token(Token::OPERATOR, "/=")) && match(Node::L_OR)){
+												if(match(Node::L_OR) && match(Token(Token::OPERATOR, "/=")) && match(Node::EXPRESSION)){
 													recoil(previousPosition);
-													auto tmp = get(Node::NAME);
+													auto tmp = get(Node::L_OR);
 
 													auto root = get(Token(Token::OPERATOR, "/="));
 													root->children.push_back(tmp);
 																										
-													root->children.push_back(get(Node::L_OR));
+													root->children.push_back(get(Node::EXPRESSION));
 													result->children.push_back(root);
 
 													return result;
 												}
 												else recoil(previousPosition);
 
-												if(match(Node::NAME) && match(Token(Token::OPERATOR, "%=")) && match(Node::L_OR)){
+												if(match(Node::L_OR) && match(Token(Token::OPERATOR, "%=")) && match(Node::EXPRESSION)){
 													recoil(previousPosition);
-													auto tmp = get(Node::NAME);
+													auto tmp = get(Node::L_OR);
 
 													auto root = get(Token(Token::OPERATOR, "%="));
 													root->children.push_back(tmp);
 																										
-													root->children.push_back(get(Node::L_OR));
+													root->children.push_back(get(Node::EXPRESSION));
 													result->children.push_back(root);
 
 													return result;
 												}
 												else recoil(previousPosition);
 
-												if(match(Node::NAME) && match(Token(Token::OPERATOR, "*=")) && match(Node::L_OR)){
+												if(match(Node::L_OR) && match(Token(Token::OPERATOR, "*=")) && match(Node::EXPRESSION)){
 													recoil(previousPosition);
-													auto tmp = get(Node::NAME);
+													auto tmp = get(Node::L_OR);
 
 													auto root = get(Token(Token::OPERATOR, "*="));
 													root->children.push_back(tmp);
 																										
-													root->children.push_back(get(Node::L_OR));
+													root->children.push_back(get(Node::EXPRESSION));
 													result->children.push_back(root);
 
 													return result;
 												}
 												else recoil(previousPosition);
 
-												if(match(Node::NAME) && match(Token(Token::OPERATOR, "|=")) && match(Node::L_OR)){
+												if(match(Node::L_OR) && match(Token(Token::OPERATOR, "|=")) && match(Node::EXPRESSION)){
 													recoil(previousPosition);
-													auto tmp = get(Node::NAME);
+													auto tmp = get(Node::L_OR);
 
 													auto root = get(Token(Token::OPERATOR, "|="));
 													root->children.push_back(tmp);
 																										
-													root->children.push_back(get(Node::L_OR));
+													root->children.push_back(get(Node::EXPRESSION));
 													result->children.push_back(root);
 
 													return result;
 												}
 												else recoil(previousPosition);
 
-												if(match(Node::NAME) && match(Token(Token::OPERATOR, "||=")) && match(Node::L_OR)){
+												if(match(Node::L_OR) && match(Token(Token::OPERATOR, "||=")) && match(Node::EXPRESSION)){
 													recoil(previousPosition);
-													auto tmp = get(Node::NAME);
+													auto tmp = get(Node::L_OR);
 
 													auto root = get(Token(Token::OPERATOR, "||="));
 													root->children.push_back(tmp);
 																										
-													root->children.push_back(get(Node::L_OR));
+													root->children.push_back(get(Node::EXPRESSION));
 													result->children.push_back(root);
 
 													return result;
 												}
 												else recoil(previousPosition);
 
-												if(match(Node::NAME) && match(Token(Token::OPERATOR, "&=")) && match(Node::L_OR)){
+												if(match(Node::L_OR) && match(Token(Token::OPERATOR, "&=")) && match(Node::EXPRESSION)){
 													recoil(previousPosition);
-													auto tmp = get(Node::NAME);
+													auto tmp = get(Node::L_OR);
 
 													auto root = get(Token(Token::OPERATOR, "&="));
 													root->children.push_back(tmp);
 																										
-													root->children.push_back(get(Node::L_OR));
+													root->children.push_back(get(Node::EXPRESSION));
 													result->children.push_back(root);
 
 													return result;
 												}
 												else recoil(previousPosition);
 
-												if(match(Node::NAME) && match(Token(Token::OPERATOR, "&&=")) && match(Node::L_OR)){
+												if(match(Node::L_OR) && match(Token(Token::OPERATOR, "&&=")) && match(Node::EXPRESSION)){
 													recoil(previousPosition);
-													auto tmp = get(Node::NAME);
+													auto tmp = get(Node::L_OR);
 
 													auto root = get(Token(Token::OPERATOR, "&&="));
 													root->children.push_back(tmp);
 																										
-													root->children.push_back(get(Node::L_OR));
+													root->children.push_back(get(Node::EXPRESSION));
 													result->children.push_back(root);
 
 													return result;
@@ -2256,9 +2489,9 @@ bool match(Token token){
 
 
 					case Node::FUNCALL: {
-										if(match(Node::NAME) && match(Node::ARGLIST)){
+										if(match(Node::EXPR8) && match(Node::ARGLIST)){
 											recoil(previousPosition);
-											result->children.push_back(get(Node::NAME));
+											result->children.push_back(get(Node::EXPR8));
 											result->children.push_back(get(Node::ARGLIST));
 											return result;
 										}
@@ -2282,7 +2515,7 @@ bool match(Token token){
 										else recoil(previousPosition);
 										
 									
-										if(match(Token(Token::OPERATOR, "*")) && match(Node::NAME1)){
+						/*				if(match(Token(Token::OPERATOR, "*")) && match(Node::NAME1)){
 													recoil(previousPosition);
 													auto tmp = get(Token(Token::OPERATOR, "*"));
 													tmp->children.push_back(get(Node::NAME1));
@@ -2313,7 +2546,7 @@ bool match(Token token){
 											}
 											else recoil(previousPosition); 
 										
-
+							*/
 										if(match(Node::NAME1)){
 												recoil(previousPosition);
 												result->children.push_back(get(Node::NAME1));
@@ -3401,8 +3634,8 @@ bool match(Token token){
 		log << "PARSING AND VERIFYING \n\n==========\n\n";
 		match(Token::BEGIN);
 
-		match(Node::OPERATORS);
-//		match(Node::EXPR6);
+//		match(Node::OPERATORS);
+		match(Node::BRACED );
 
 		if(!match(Token::END)){
 			throw RecognitionException ("Here should be end of input! " + currentToken.position.toString());	
@@ -3413,17 +3646,18 @@ bool match(Token token){
 		log.flush();
 
 
-/*		log << "BUILDING TREE\n\n==========\n\n";
+		log << "BUILDING TREE\n\n==========\n\n";
 		logDepth = false;
 		recoil(0);
-*/		tree = new Node(Node::PROGRAM);
-/*		tree->children.push_back(get(Token::BEGIN));
-		tree->children.push_back( get(Node::OPERATORS));
+		tree = new Node(Node::PROGRAM);
+		tree->children.push_back(get(Token::BEGIN));
+//		tree->children.push_back( get(Node::OPERATORS));
+		tree->children.push_back( get(Node::BRACED));
 		tree->children.push_back(get(Token::END));
 
 
 		log << "BUILT TREE\n\n==========\n\n";
-*/
+
 
 		
 	}
